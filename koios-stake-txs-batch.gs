@@ -1,0 +1,614 @@
+/**
+ * Koios Stake Transactions Batch Processor - Google Apps Script
+ * Reads stake addresses from a Google Sheet and processes them by bucket
+ * Creates separate sheets for each bucket with all transactions
+ * 
+ * Configuration:
+ * - Source sheet: "transaction-detetective-suspects" in "transaction-detetective" spreadsheet
+ * - Date filter: 2025-01-01 onwards (hardcoded)
+ * - Output: Separate sheets for each bucket (e.g., "Intersect", "CDH")
+ */
+
+// Configuration
+const KOIOS_API_BASE = "https://api.koios.rest/api/v1";
+const ACCOUNT_ADDRESSES_ENDPOINT = `${KOIOS_API_BASE}/account_addresses`;
+const ADDRESS_TXS_ENDPOINT = `${KOIOS_API_BASE}/address_txs`;
+const TX_INFO_ENDPOINT = `${KOIOS_API_BASE}/tx_info`;
+const TIP_ENDPOINT = `${KOIOS_API_BASE}/tip`;
+const BATCH_SIZE = 50;
+const FILTER_DATE = "2025-01-01"; // Hardcoded date filter
+
+// Spreadsheet and sheet configuration
+// You can modify these or use the functions below to specify different spreadsheets
+const DEFAULT_SPREADSHEET_NAME = "transaction-detetective";
+const SOURCE_SHEET_NAME = "transaction-detetective-suspects";
+
+// Option 1: Use spreadsheet ID (most reliable)
+const SPREADSHEET_ID = ""; // Paste your spreadsheet ID here
+
+// Option 2: Use spreadsheet URL
+const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1krE_d59sgTkmQjmkRI4AzN-723k_0d7VgLj3TK8AFVU"; // Paste your spreadsheet URL here
+
+/**
+ * Main function to process all stake addresses by bucket
+ * This is the function you'll run from Google Apps Script
+ */
+function processAllStakeAddresses() {
+  try {
+    console.log("Starting batch processing of stake addresses...");
+    
+    // Get the source spreadsheet
+    const spreadsheet = getSourceSpreadsheet();
+    if (!spreadsheet) {
+      throw new Error(`Could not find spreadsheet: ${DEFAULT_SPREADSHEET_NAME}`);
+    }
+    
+    // Get the source sheet
+    const sourceSheet = spreadsheet.getSheetByName(SOURCE_SHEET_NAME);
+    if (!sourceSheet) {
+      throw new Error(`Could not find sheet: ${SOURCE_SHEET_NAME}`);
+    }
+    
+    // Read the data from the source sheet
+    const data = readStakeAddressData(sourceSheet);
+    console.log(`Found ${data.length} stake addresses across ${Object.keys(data).length} buckets`);
+    
+    // Process each bucket
+    for (const [bucketName, addresses] of Object.entries(data)) {
+      console.log(`Processing bucket: ${bucketName} with ${addresses.length} addresses`);
+      processBucket(bucketName, addresses, spreadsheet);
+    }
+    
+    console.log("Batch processing completed successfully!");
+    
+  } catch (error) {
+    console.error("Error in batch processing:", error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get the source spreadsheet using multiple methods
+ * @returns {Spreadsheet} The source spreadsheet
+ */
+function getSourceSpreadsheet() {
+  // Method 1: Use spreadsheet ID (most reliable)
+  if (SPREADSHEET_ID && SPREADSHEET_ID.trim() !== "") {
+    try {
+      return SpreadsheetApp.openById(SPREADSHEET_ID);
+    } catch (error) {
+      console.log("Could not open spreadsheet by ID:", error.message);
+    }
+  }
+  
+  // Method 2: Use spreadsheet URL
+  if (SPREADSHEET_URL && SPREADSHEET_URL.trim() !== "") {
+    try {
+      const id = extractSpreadsheetIdFromUrl(SPREADSHEET_URL);
+      if (id) {
+        return SpreadsheetApp.openById(id);
+      }
+    } catch (error) {
+      console.log("Could not open spreadsheet by URL:", error.message);
+    }
+  }
+  
+  // Method 3: Search by name (fallback)
+  try {
+    const files = DriveApp.getFilesByName(DEFAULT_SPREADSHEET_NAME);
+    if (files.hasNext()) {
+      const file = files.next();
+      return SpreadsheetApp.openById(file.getId());
+    }
+  } catch (error) {
+    console.log("Could not find spreadsheet by name:", error.message);
+  }
+  
+  return null;
+}
+
+/**
+ * Extract spreadsheet ID from URL
+ * @param {string} url - Spreadsheet URL
+ * @returns {string|null} Spreadsheet ID or null
+ */
+function extractSpreadsheetIdFromUrl(url) {
+  // Handle different URL formats:
+  // https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit
+  // https://docs.google.com/spreadsheets/d/SPREADSHEET_ID/edit#gid=0
+  const match = url.match(/\/spreadsheets\/d\/([a-zA-Z0-9-_]+)/);
+  return match ? match[1] : null;
+}
+
+/**
+ * Read stake address data from the source sheet
+ * @param {Sheet} sourceSheet - The source sheet
+ * @returns {Object} Object with bucket names as keys and arrays of addresses as values
+ */
+function readStakeAddressData(sourceSheet) {
+  const data = sourceSheet.getDataRange().getValues();
+  const headers = data[0];
+  
+  // Find column indices
+  const bucketIndex = headers.indexOf("Bucket");
+  const labelIndex = headers.indexOf("Label");
+  const controllerIndex = headers.indexOf("Controller");
+  const stakeAddressIndex = headers.indexOf("Stake Address");
+  
+  if (bucketIndex === -1 || stakeAddressIndex === -1) {
+    throw new Error("Required columns 'Bucket' and 'Stake Address' not found in source sheet");
+  }
+  
+  const result = {};
+  
+  // Process each row (skip header)
+  for (let i = 1; i < data.length; i++) {
+    const row = data[i];
+    const bucket = row[bucketIndex];
+    const stakeAddress = row[stakeAddressIndex];
+    const label = labelIndex !== -1 ? row[labelIndex] : "";
+    const controller = controllerIndex !== -1 ? row[controllerIndex] : "";
+    
+    // Skip empty rows
+    if (!bucket || !stakeAddress) continue;
+    
+    // Initialize bucket if it doesn't exist
+    if (!result[bucket]) {
+      result[bucket] = [];
+    }
+    
+    // Add address info to bucket
+    result[bucket].push({
+      stakeAddress: stakeAddress,
+      label: label,
+      controller: controller
+    });
+  }
+  
+  return result;
+}
+
+/**
+ * Process all addresses in a bucket
+ * @param {string} bucketName - Name of the bucket
+ * @param {Array} addresses - Array of address objects
+ * @param {Spreadsheet} spreadsheet - The target spreadsheet
+ */
+async function processBucket(bucketName, addresses, spreadsheet) {
+  try {
+    console.log(`Processing bucket: ${bucketName}`);
+    
+    // Create or get the bucket sheet
+    let bucketSheet = spreadsheet.getSheetByName(bucketName);
+    if (bucketSheet) {
+      bucketSheet.clear();
+    } else {
+      bucketSheet = spreadsheet.insertSheet(bucketName);
+    }
+    
+    // Set up headers
+    setupBucketSheetHeaders(bucketSheet);
+    
+    // Collect all transactions for this bucket
+    const allTransactions = [];
+    
+    for (const addressInfo of addresses) {
+      console.log(`  Processing stake address: ${addressInfo.stakeAddress} (${addressInfo.label})`);
+      
+      try {
+        const transactions = await getTransactionsForStakeAddress(
+          addressInfo.stakeAddress, 
+          addressInfo.label, 
+          addressInfo.controller,
+          bucketName
+        );
+        
+        allTransactions.push(...transactions);
+        console.log(`    Found ${transactions.length} transactions`);
+        
+      } catch (error) {
+        console.error(`    Error processing ${addressInfo.stakeAddress}:`, error.message);
+        // Continue with other addresses even if one fails
+      }
+    }
+    
+    // Write all transactions to the bucket sheet
+    if (allTransactions.length > 0) {
+      writeTransactionsToSheet(bucketSheet, allTransactions);
+      console.log(`  Wrote ${allTransactions.length} transactions to ${bucketName} sheet`);
+    } else {
+      console.log(`  No transactions found for ${bucketName} bucket`);
+    }
+    
+  } catch (error) {
+    console.error(`Error processing bucket ${bucketName}:`, error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get transactions for a single stake address
+ * @param {string} stakeAddress - The stake address
+ * @param {string} label - The label for this address
+ * @param {string} controller - The controller for this address
+ * @param {string} bucket - The bucket name for this address
+ * @returns {Array} Array of transaction objects
+ */
+async function getTransactionsForStakeAddress(stakeAddress, label, controller, bucket) {
+  try {
+    // Get payment addresses
+    const paymentAddresses = getPaymentAddresses(stakeAddress);
+    if (paymentAddresses.length === 0) {
+      console.log(`    No payment addresses found for ${stakeAddress}`);
+      return [];
+    }
+    
+    // Get transactions for all payment addresses
+    const txResponse = getAddressTransactions(paymentAddresses);
+    
+    // Extract transaction hashes
+    const txHashes = txResponse
+      .filter(tx => tx.tx_hash)
+      .map(tx => tx.tx_hash);
+    
+    if (txHashes.length === 0) {
+      return [];
+    }
+    
+    // Get detailed transaction information in batches
+    const txDetails = [];
+    
+    for (let i = 0; i < txHashes.length; i += BATCH_SIZE) {
+      const batchHashes = txHashes.slice(i, i + BATCH_SIZE);
+      const batchDetails = getTransactionDetails(batchHashes);
+      if (batchDetails && batchDetails.length > 0) {
+        txDetails.push(...batchDetails);
+      }
+    }
+    
+    // Get USD price for the filter date
+    const adaUsdPrice = getAdaUsdPrice(FILTER_DATE);
+    
+    // Process and filter transactions
+    const transactions = [];
+    const targetTimestamp = Math.floor(new Date(FILTER_DATE).getTime() / 1000);
+    
+    const txDetailsMap = new Map();
+    txDetails.forEach(tx => {
+      txDetailsMap.set(tx.tx_hash, tx);
+    });
+    
+    txResponse.forEach(tx => {
+      if (!tx.tx_hash) return;
+      
+      const txDetail = txDetailsMap.get(tx.tx_hash);
+      if (!txDetail) return;
+      
+      const blockTime = txDetail.tx_timestamp || 0;
+      
+      // Check if transaction is after the filter date
+      if (blockTime >= targetTimestamp) {
+        const amountAda = lovelaceToAda(txDetail.total_output || "0");
+        const feeAda = lovelaceToAda(txDetail.fee || "0");
+        const amountUsd = amountAda * adaUsdPrice;
+        const transactionTime = formatTimestamp(blockTime);
+        
+        transactions.push({
+          bucket: bucket,
+          label: label,
+          controller: controller,
+          stakeAddress: stakeAddress,
+          paymentAddress: paymentAddresses[0] || "",
+          transactionHash: tx.tx_hash,
+          transactionTime: transactionTime,
+          blockHeight: txDetail.block_height || 0,
+          amountAda: amountAda,
+          amountUsd: amountUsd,
+          feeAda: feeAda
+        });
+      }
+    });
+    
+    return transactions;
+    
+  } catch (error) {
+    console.error(`Error getting transactions for ${stakeAddress}:`, error.message);
+    return [];
+  }
+}
+
+/**
+ * Set up headers for a bucket sheet
+ * @param {Sheet} sheet - The sheet to set up
+ */
+function setupBucketSheetHeaders(sheet) {
+  const headers = [
+    "Bucket",
+    "Label", 
+    "Controller",
+    "Stake Address",
+    "Payment Address",
+    "Transaction Hash",
+    "Transaction Time",
+    "Block Height",
+    "Amount (ADA)",
+    "Amount (USD)",
+    "Fee (ADA)"
+  ];
+  
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+  sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold");
+  
+  // Format header row
+  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setBackground("#4285f4");
+  headerRange.setFontColor("white");
+}
+
+/**
+ * Write transactions to a sheet
+ * @param {Sheet} sheet - The sheet to write to
+ * @param {Array} transactions - Array of transaction objects
+ */
+function writeTransactionsToSheet(sheet, transactions) {
+  if (transactions.length === 0) return;
+  
+  // Convert transactions to rows
+  const rows = transactions.map(tx => [
+    tx.bucket,
+    tx.label,
+    tx.controller,
+    tx.stakeAddress,
+    tx.paymentAddress,
+    tx.transactionHash,
+    tx.transactionTime,
+    tx.blockHeight,
+    tx.amountAda,
+    tx.amountUsd,
+    tx.feeAda
+  ]);
+  
+  // Write data to sheet
+  sheet.getRange(2, 1, rows.length, 11).setValues(rows);
+  
+  // Format number columns
+  const amountAdaRange = sheet.getRange(2, 9, rows.length, 1);
+  const amountUsdRange = sheet.getRange(2, 10, rows.length, 1);
+  const feeAdaRange = sheet.getRange(2, 11, rows.length, 1);
+  
+  amountAdaRange.setNumberFormat("0.000000");
+  amountUsdRange.setNumberFormat("0.000000");
+  feeAdaRange.setNumberFormat("0.000000");
+  
+  // Auto-resize columns
+  sheet.autoResizeColumns(1, 11);
+  
+  // Add borders
+  const dataRange = sheet.getRange(1, 1, rows.length + 1, 11);
+  dataRange.setBorder(true, true, true, true, true, true);
+}
+
+// ============================================================================
+// API Functions (same as before)
+// ============================================================================
+
+/**
+ * Make API call to Koios
+ * @param {string} endpoint - API endpoint URL
+ * @param {Object} data - Request data
+ * @returns {Object} API response
+ */
+function apiCall(endpoint, data) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify(data)
+  };
+  
+  try {
+    const response = UrlFetchApp.fetch(endpoint, options);
+    
+    if (response.getResponseCode() !== 200) {
+      throw new Error(`Koios returned HTTP ${response.getResponseCode()}: ${response.getContentText()}`);
+    }
+    
+    return JSON.parse(response.getContentText());
+  } catch (error) {
+    console.error(`API call failed for ${endpoint}:`, error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get payment addresses for a stake address
+ * @param {string} stakeAddress - Stake address
+ * @returns {Array} Array of payment addresses
+ */
+function getPaymentAddresses(stakeAddress) {
+  const data = {
+    _stake_addresses: [stakeAddress]
+  };
+  
+  const response = apiCall(ACCOUNT_ADDRESSES_ENDPOINT, data);
+  return response[0]?.addresses || [];
+}
+
+/**
+ * Get transactions for payment addresses
+ * @param {Array} addresses - Array of payment addresses
+ * @returns {Array} Array of transaction objects
+ */
+function getAddressTransactions(addresses) {
+  const data = {
+    _addresses: addresses
+  };
+  
+  return apiCall(ADDRESS_TXS_ENDPOINT, data);
+}
+
+/**
+ * Get detailed transaction information
+ * @param {Array} txHashes - Array of transaction hashes
+ * @returns {Array} Array of detailed transaction objects
+ */
+function getTransactionDetails(txHashes) {
+  const data = {
+    _tx_hashes: txHashes
+  };
+  
+  return apiCall(TX_INFO_ENDPOINT, data);
+}
+
+/**
+ * Convert lovelace to ADA
+ * @param {string|number} lovelace - Amount in lovelace
+ * @returns {number} Amount in ADA
+ */
+function lovelaceToAda(lovelace) {
+  return parseFloat(lovelace) / 1000000;
+}
+
+/**
+ * Get USD price for ADA on a given date
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @returns {number} USD price per ADA
+ */
+function getAdaUsdPrice(date) {
+  try {
+    // Convert date to DD-MM-YYYY format for CoinGecko
+    const dateObj = new Date(date);
+    const formattedDate = `${String(dateObj.getDate()).padStart(2, '0')}-${String(dateObj.getMonth() + 1).padStart(2, '0')}-${dateObj.getFullYear()}`;
+    
+    // Try to get historical price from CoinGecko API
+    const coingeckoUrl = `https://api.coingecko.com/api/v3/coins/cardano/history?date=${formattedDate}`;
+    
+    try {
+      const response = UrlFetchApp.fetch(coingeckoUrl);
+      const data = JSON.parse(response.getContentText());
+      
+      if (data.market_data?.current_price?.usd) {
+        return data.market_data.current_price.usd;
+      }
+    } catch (error) {
+      console.log("Historical price not available, trying current price...");
+    }
+    
+    // Fallback to current price
+    const currentPriceUrl = "https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd";
+    const response = UrlFetchApp.fetch(currentPriceUrl);
+    const data = JSON.parse(response.getContentText());
+    
+    if (data.cardano?.usd) {
+      return data.cardano.usd;
+    }
+    
+    // Final fallback
+    return 0.25;
+  } catch (error) {
+    console.error("Error getting ADA price:", error.message);
+    return 0.25;
+  }
+}
+
+/**
+ * Format timestamp to human readable
+ * @param {number} timestamp - Unix timestamp
+ * @returns {string} Formatted date string
+ */
+function formatTimestamp(timestamp) {
+  const date = new Date(timestamp * 1000);
+  return Utilities.formatDate(date, Session.getScriptTimeZone(), "yyyy-MM-dd HH:mm:ss");
+}
+
+/**
+ * Helper function to process with a specific spreadsheet ID
+ * @param {string} spreadsheetId - The spreadsheet ID
+ */
+function processWithSpreadsheetId(spreadsheetId) {
+  // Temporarily set the spreadsheet ID
+  const originalId = SPREADSHEET_ID;
+  // Note: We can't modify const variables, so we'll need to use a different approach
+  
+  // Use the direct method
+  processAllStakeAddressesWithSpreadsheet(spreadsheetId);
+}
+
+/**
+ * Helper function to process with a specific spreadsheet URL
+ * @param {string} spreadsheetUrl - The spreadsheet URL
+ */
+function processWithSpreadsheetUrl(spreadsheetUrl) {
+  const spreadsheetId = extractSpreadsheetIdFromUrl(spreadsheetUrl);
+  if (spreadsheetId) {
+    processAllStakeAddressesWithSpreadsheet(spreadsheetId);
+  } else {
+    throw new Error("Invalid spreadsheet URL format");
+  }
+}
+
+/**
+ * Process all stake addresses with a specific spreadsheet
+ * @param {string} spreadsheetId - The spreadsheet ID
+ */
+function processAllStakeAddressesWithSpreadsheet(spreadsheetId) {
+  try {
+    console.log(`Processing with spreadsheet ID: ${spreadsheetId}`);
+    
+    // Get the source spreadsheet by ID
+    const spreadsheet = SpreadsheetApp.openById(spreadsheetId);
+    if (!spreadsheet) {
+      throw new Error(`Could not open spreadsheet with ID: ${spreadsheetId}`);
+    }
+    
+    // Get the source sheet
+    const sourceSheet = spreadsheet.getSheetByName(SOURCE_SHEET_NAME);
+    if (!sourceSheet) {
+      throw new Error(`Could not find sheet: ${SOURCE_SHEET_NAME}`);
+    }
+    
+    // Read the data from the source sheet
+    const data = readStakeAddressData(sourceSheet);
+    console.log(`Found ${data.length} stake addresses across ${Object.keys(data).length} buckets`);
+    
+    // Process each bucket
+    for (const [bucketName, addresses] of Object.entries(data)) {
+      console.log(`Processing bucket: ${bucketName} with ${addresses.length} addresses`);
+      processBucket(bucketName, addresses, spreadsheet);
+    }
+    
+    console.log("Batch processing completed successfully!");
+    
+  } catch (error) {
+    console.error("Error in batch processing:", error.message);
+    throw error;
+  }
+}
+
+/**
+ * Test function to run the batch processor
+ * This is the function you'll run from Google Apps Script
+ */
+function myFunction() {
+  processAllStakeAddresses();
+}
+
+/**
+ * Example function showing how to use with spreadsheet ID
+ * Replace the ID with your actual spreadsheet ID
+ */
+function runWithMySpreadsheet() {
+  const mySpreadsheetId = "YOUR_SPREADSHEET_ID_HERE";
+  processWithSpreadsheetId(mySpreadsheetId);
+}
+
+/**
+ * Example function showing how to use with spreadsheet URL
+ * Replace the URL with your actual spreadsheet URL
+ */
+function runWithMySpreadsheetUrl() {
+  const mySpreadsheetUrl = "https://docs.google.com/spreadsheets/d/YOUR_SPREADSHEET_ID/edit";
+  processWithSpreadsheetUrl(mySpreadsheetUrl);
+}
