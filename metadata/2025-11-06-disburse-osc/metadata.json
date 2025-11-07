@@ -1,0 +1,33 @@
+{
+  "@context": "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-contracts/refs/heads/main/offchain/src/metadata/context.jsonld",
+  "hashAlgorithm": "blake2b-256",
+  "txAuthor": "c27...",
+  "instance": "1ef...",
+  "body": {
+    "event": "disburse",
+    "label": "Swapping Ada allocated for OSC proposal to USDM",
+    "description": [
+      "Securing the budgeted dollar value in USDM "
+    ],
+    "justification": [
+      "Together with the Open Source Committee, Intersect are requesting ",
+      "to withdraw 5,885,000 ada to undertake USDM stablecoin conversion ",
+      "of the ada equivalent of 3,000,000 USD. ",
+      "Due to the lack of liquidity in Cardano stablecoins,",
+      "the Cardano Development Holdings (CDH) will ",
+      "use NBX to perform OTC trade and then ",
+      "mint new USDM. The destination is controlled by the CDH ",
+      "via NBX's custodial service."
+    ],
+    "destination": [
+      {
+        "label": "NBX-USDM",
+        "details": {
+          "anchorUrl": "ipfs://bafybeid6gwlum7euu6nmlhucm74do4bak26owmvq2u5l3vmls5amdfqxie",
+          "anchorDataHash": "7dbe3576f6ec73b167c26a2d69f4e04efa577437affa578d5c9495238680fd4b"
+        }
+      }
+    ],
+    "estimatedReturn": 1764331200
+  }
+}
