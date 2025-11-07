@@ -1,0 +1,9 @@
+{
+  "vendor_project": {
+    "title": "Input Output Engineering Core Development Proposal (4of6)",
+    "id": "EC-0002-25",
+    "contract_description": "The Supplier will provide comprehensive engineering, maintenance, and development services to enhance and secure the Cardano protocol and its core infrastructure. The services are focused on delivering the community-endorsed technical roadmap and maintaining network stability. Projects included within this smart contract instance: LSM, Ledger HD, Revised Stakepool Incentives & Nested Transactions",
+    "vendor_payment_address": ""
+    "utxo_identifier": "UTXO-EC-0002-25-04"
+  }
+}
