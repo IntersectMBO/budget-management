@@ -1,0 +1,15 @@
+{
+  "@context": "https://github.com/cardano-foundation/CIPs/blob/master/CIP-0100/README.md",
+  "hashAlgorithm": "blake2b-256",
+  "authors": [],
+  "body": {
+    "comment": "Updated documentation for gov_action1q0m8z7glm9cprucwf44hdjdfra8khnakpm3hu5ueh929hvljw4aqqzuxfxz",
+    "references": [
+      {
+        "@type": "Other",
+        "label": "Constitutional clarifications and guidance for the Snek loan governance action (PDF)",
+        "uri": "ipfs://bafkreigpgbzmflz3y2hz2mbpwkynaeuatff4wy2auczuvzgwdaecwpdphi"
+      }
+    ]
+  }
+}
