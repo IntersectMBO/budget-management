@@ -26,7 +26,7 @@ Additionally we have used a linked context object, the tooling does not support 
 #### 1. Add in full @context object
 
 Unfortunately verifycardanomessage does not support context objects via URL,
-so to validate the metadata we will have to manually copy in the whole @context object.
+so to validate the metadata we will have to manually copy in the whole CIP-100 @context object.
 
 This can be found at https://raw.githubusercontent.com/cardano-foundation/CIPs/refs/heads/master/CIP-0100/cip-0100.common.jsonld
 
