@@ -1,0 +1,10 @@
+{
+  "vendor_project": {
+    "title": "IOR - Cardano Vision Work Program 2025",
+    "id": "ER-0001-25",
+    "contract_description": "The Supplier will provide a strategic program of research and development designed to realizeCardano Vision and place Cardano at the forefront of blockchain innovation. The services are designed to deliver foundational research and technology validationworkstreams up to SRL5, alongside communication and dissemination activities.",
+    "utxo_identifier": "UTXO-ER-0001-25"
+    "pssc_vendor_credential": "addr1qxm2k9499f8y4ej2yjftrnyjs6p7vht7px7fexnnh6qu8medne9xayypxxj0adeuy3ey4yhpnlg93qvdrzk8tpvfcfdsjth9px"
+    "allowlist_address": "addr1q8mrhgw82d25syqwjlh5r952ur2uc3e65u96yeze743ndtc0vsfn4c398jwgg7uyzlluxdfve4jd5z0lqxqax90phf5sx6r5lx"
+  }
+}
