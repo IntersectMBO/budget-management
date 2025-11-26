@@ -1,0 +1,10 @@
+  {
+  "vendor_project": {
+    "title": "IOG - Beyond Minimum Viable Governance",
+    "id": "EC-0003-25",
+    "contract_description": "This initiative will establish a robust framework for evaluating and enhancing Cardano's governance system. We will identify and benchmark key governance metrics to assess the health, performance, and overall impact of our decentralized decision-making processes. The resulting 'State of Governance' report will provide a structured evaluation of participation, track vital Key Performance Indicators (KPIs), map the evolving governance ecosystem, and pinpoint specific areas for improvement. ",
+    "utxo_identifier": "UTXO-EG-0003-25"
+    "pssc_vendor_credential": "addr1qxfvce4m6y929dfd4n89wxw93097kwcx3srzqv6j6akpggahh2fr5j8l29xy58fytkp294x4e4yc79fkr7szu64lfarsdnedfk"
+    "allowlist_address": "addr1qyy3uakahwewfgq2hdwnwf530xssvqcurhv6assmpzvnphlxqnmfcjxr6c5emn8qnq4en5xhjrn7cny2tj8pf0yzqv8q3e8e9t"
+  }
+}

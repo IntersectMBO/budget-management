@@ -1,0 +1,40 @@
+"760,000",10/30/2025,"MS7.1 - Minotaur AVS: Enable SPOs to Customize Rewards
+Deliverables: Validator can set custom fees applicable to a particular network, displayed with the Validators info in the Discover Validators webUI component",Pause
+"760,000",10/30/2025,"MS7.2 - Minotaur AVS: Assured liveness of the network
+Deliverables: Tests with runtime properties. Documentation and tutorials",Pause
+"760,000",1/30/2026,"MS7.3 - Minotaur AVS: Enable and support launch of first PC (Midnight) unlocking new revenue opportunities to validators
+Deliverables: Native Token Reserve as Cardano native asset. Enable governance management on Cardano",
+"760,000",7/30/2026,"MS7.4 - Minotaur AVS: Clear UI/UX & online presence for onboarding validators
+Deliverables: Intuitive user experience. Dedicated Web Portal to Facilitate Validator Onboarding and Partner Chain Integration",
+"760,000",7/30/2026,"MS7.5 - Minotaur AVS V1 feature set release
+Deliverables: Custom Fee settings. Automatic reward distribution (for Validators and Delegators). Transparent Reward Calculations",
+"464,750",1/30/2026,"MS8.1 - Mithril: Decentralized Mithril Signature Diffusion - Prototype
+Deliverables: N2C mini-protocols in Mithril signer and Cardano node. DMQ side-car node",
+"464,750",10/30/2025,"MS8.2 - Mithril: Mithril Support for UTXO HD
+Deliverables: Support for current and new in- memory ledger state. Support for on disc ledger state",Pause
+"464,750",1/30/2026,"MS8.3 - Mithril: Decentralized Mithril Signature Diffusion - Mainnet
+Deliverables: Production ready p2p network based on DMQ. Signer communication through DMQ nodes. Aggregator communication through DMQ nodes",
+"464,750",1/30/2026,"MS8.4 - Mithril: Multiple Mithril Aggregators - Mainnet
+Deliverables: Updated Mithril protocol and mainnet deployment supporting multiple aggregators. Production-grade ALBA Aggregator, documentation, and operational guidelines.",
+"464,750",1/30/2026,"MS8.5 - Mithril: Mithril ZK proofs - Prototype
+Deliverables: ZKP-enhanced Mithril prototype, prototype testnet reports.",
+"464,750",4/30/2026,"MS8.6 - Mithril: Mithril/Cardano Integration
+Deliverables: Integrated codebase, binaries, integration documentation, and testnet/mainnet deployment.",
+"464,750",4/30/2026,"MS8.7 - Mithril: Mithril ZK proofs - Mainnet
+Deliverables: ZKP-enhanced Mithril release, mainnet rollout report, and updated documentation.",
+"464,750",7/30/2026,"MS8.8 - Mithril: Mithril Certificates for new datatypes
+Deliverables: Updated Mithril protocol and support modules for new datatypes.",
+"193,143",11/30/2025,"MS9.1 - KES Agent: Development of KES Agent
+Deliverables: Integration code submitted, Comms, tutorials, guides, support",Pause
+"193,143",11/30/2025,"MS9.2 - KES Agent: Integration of KES Agent to the Node (as a beta feature)
+Deliverables: Report demonstrating readiness",Pause
+"193,143",12/30/2025,"MS9.3 - KES Agent: The KES Agent integrated into the Node passing P&T and Testing
+Deliverables: P&T and Testing reports",Pause
+"193,143",12/30/2025,"MS9.4 - KES Agent: Releasing Node version that includes the KES Agent as a beta feature
+Deliverables: New release in cardano-node github repo",Pause
+"193,143",11/30/2025,"MS9.5 - KES Agent: passing an audit
+Deliverables: Community update on the result of the audit.",Pause
+"193,143",1/30/2026,"MS9.6 - KES Agent: Support the beta-users, obtain feedback and release patches as needed.
+Deliverables: Receive feedback from community and release patches as needed",
+"193,143",2/28/2026,"MS9.7 - KES Agent: Upgrade the KES Agent to 1.0
+Deliverables: Node version release",

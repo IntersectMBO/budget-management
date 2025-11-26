@@ -1,0 +1,38 @@
+"289,714",1/30/2026,"MS5.1 - Acropolis: Minimal necessary tracking of governance actions, stake distribution, reward accounts to derive Stake Pool Distribution
+Deliverables:  Implementation of modules to track stake, governance and rewards and deriving Stake Pool Distribution Report validating correctness and efficiency of SPD derivation",
+"289,714",12/30/2025,"MS5.2 - Acropolis: Create REST APIs for ledger state, SPD and chain information
+Deliverables:  REST API implementations with comprehensive endpoints documented in OpenAPI (Swagger) Performance and load testing report confirming API reliability and response time",Pause
+"289,714",1/30/2026,"MS5.3 - Acropolis: Integrate and test with chosen application team
+Deliverables:  Integration test cases, results, and identified improvement areas documented Integration and acceptance test report confirming successful interoperability",
+"289,714",1/30/2026,"MS5.4 - Acropolis: Block header validation
+Deliverables:  Block header validation module Test reports",
+"289,714",1/30/2026,"MS5.5 - Acropolis: Ledger state validation
+Deliverables:  Upgrades to ledger state derivation modules (see MS1) to report errors Test reports",
+"289,714",1/30/2026,"MS5.6 - Acropolis: Transaction validation - phase 1
+Deliverables:  Transaction Phase 1 validation module Test cases and reports",
+"289,714",4/30/2026,"MS5.7 - Acropolis: Transaction validation - phase 2
+Deliverables:  Transaction Phase 2 validation module Test cases and reports",
+"289,714",4/30/2026,"MS5.8 - Acropolis: Multi-peer networking
+Deliverables:  P2P network module Chain selection / consensus module Test network infrastructure and reports",
+"289,714",4/30/2026,"MS5.9 - Acropolis: Chain storage
+Deliverables:  Block store module Test reports",
+"289,714",7/30/2026,"MS5.10 - Acropolis: ChainSync / BlockFetch server
+Deliverables:  Block server module Test reports",
+"289,714",7/30/2026,"MS5.11 - Acropolis: Relay node
+Deliverables:  Additional modules as required Configuration files and installation guides Live test reports from participation in preview testnet",
+"289,714",10/30/2026,"MS5.12 - Acropolis: Mempool & block production
+Deliverables:  Mempool and block building modules. Test reports from manually triggered & dry run block production",
+"289,714",10/30/2026,"MS5.13 - Acropolis: Block producing node - testnet
+Deliverables:  KES store / agent, VRF lottery modules, upgrades to P2P for contribution. Test reports from operation on preview testnet",
+"289,718",1/30/2027,"MS5.14 - Acropolis: Block producing node - mainnet
+Deliverables:  Test reports from operation on mainnet",
+"743,600",10/30/2025,"MS6.1 - Hydra Development: Hydra V1 feature set
+Deliverables:  Improved event sourcing; Bounded memory; production grade monitoring and operations",Pause
+"743,600",11/30/2025,"MS6.2 - Hydra Development: CNT payments across Heads
+Deliverables:  Backend that routes payments between Hydra heads; monitor and rebalance liquidity between heads",Pause
+"743,600",1/30/2026,"MS6.3 - Hydra Development: Lightweight Hydra node
+Deliverables:  Compile to WASM; mobile/browser compatible network stack; off-chain protocol simplifications (allow being offline in 2 party head)",
+"743,600",4/30/2026,"MS6.4 - Hydra Development: Early bitcoin lightning interoperability
+Deliverables:  Backend that routes payments from hydra to lightning node; Browser application that scans a lightning invoice and converts it to a payment in a hydra head",
+"743,600",7/30/2026,"MS6.5 - Hydra Development: Resolve known problems, audit, UX improvements, marketing initiatives
+Deliverables:  Partial fanout; no more known issues; no new issues unsolved by audit; updated website and docs, workshops at conferences",

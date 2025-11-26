@@ -1,0 +1,42 @@
+"416,000",10/30/2025,"MS14.1 - Plutus Core: CIP-0132: dropList primitive
+Deliverables: The dropList primitive for Plutus",Pause
+"416,000",10/30/2025,"MS14.2 - Plutus Core: CIP-0109: modexp primitive
+Deliverables: The modexp primitive for Plutus",Pause
+"416,000",10/30/2025,"MS14.3 - Plutus Core: CIP-0138: builtin arrays
+Deliverables: The built-in array type, and primitives for operating on arrays",Pause
+"416,000",4/30/2026,"MS14.4 - Plutus Core: CIP-0153: builtin value
+Deliverables: The built-in value type, and primitives for operating on values",
+"416,000",1/30/2026,"MS14.5 - Plutus Core: CIP-0133: MSM primitive
+Deliverables: The MSM primitive for Plutus",
+"416,000",1/30/2026,"MS14.6 - Plutus Core: CIP-0112: Observe script type
+Deliverables: A new script purpose - Observe, for Plutus V4",
+"416,000",1/30/2026,"MS14.7- Plutus Core: Support case analysis on builtin types
+Deliverables: Support case analysis on Bool, Integer and Data",
+"416,000",1/30/2026,"MS14.8 - Plutus Core: Pattern matching primitives
+Deliverables: The pattern matching primitives for Plutus. May not be worthwhile once case analysis on builtin types is implemented - to be determined.",
+"416,000",4/30/2026,"MS14.9 - Plutus Core: Introduce Plutus V4 as a new Plutus ledger language version
+Deliverables: Plutus V4",
+"416,000",4/30/2026,"MS14.10 - Plutus Core: Plinth (Plutus Tx) compiler and library enhancement 
+Deliverables: (1) support inlining for recursive bindings; (2) implement new compiler optimizations targeting new language extensions (3) make the new (data-based) API more comprehensive and efficient",
+"416,000",7/30/2026,"MS14.11 - Plutus Core: Plinth (Plutus Tx) developer tooling enhancement
+Deliverables: (1) Remove the requirement of using Nix for setup (2) Support at least two major GHC versions (3) Make the UPLC executable easier to use",
+"416,000",7/30/2026,"MS14.12 - Plutus Core: Plutus language performance benchmark 
+Deliverables: Develop a benchmark comparing the performance of various surface languages targeting UPLC, such as Plinth, Aiken, plu-ts and Plutarch.",
+"416,000",10/30/2026,"MS14.13 - Plutus Core: Plinth (Plutus Tx) compiler certifier: initial release
+Deliverables: Initial release of the certifier focusing on certifying UPLC optimizations",
+"540,800",1/30/2026,"MS15.1 - Tiered Pricing Models: Transaction Prioritization Framework
+Deliverables: Test system with initial prioritization algorithms implemented",
+"540,800",1/30/2026,"MS15.2 - Tiered Pricing Models: AI Congestion Prediction Service
+Deliverables: Working AI service with historical and real-time data ingestion",
+"540,800",4/30/2026,"MS15.3 - Tiered Pricing Models: Wallet Integration & Testnet Launch
+Deliverables: Updated wallet UI; functioning testnet environment",
+"540,800",4/30/2026,"MS15.4 - Tiered Pricing Models: Assured Channel Design Finalization
+Deliverables: Assured channel specification; socialized CIP draft",
+"540,800",7/30/2026,"MS15.5 - Tiered Pricing Models: Cardano Problem Statement & Revised CIPs
+Deliverables: CIP document(s) covering congestion handling and assured channel logic",
+"1,126,666",1/30/2026,"MS16.1 - Transaction Monitoring System: State-of-the-art report
+Deliverables: Report on fraud and anomaly detection. Specification of the Backend analysis",
+"1,126,666",7/30/2026,"MS16.2 - Transaction Monitoring System: Alpha version of the backend
+Deliverables: Release in the open source repository. Live version on a selection of Dapps or wallets on a testnet with a rough UI",
+"1,126,668",7/30/2026,"MS16.3 - Transaction Monitoring System: Frontend for data visualization and alert mechanism
+Deliverables: Code available in the open source repository. Website with the new Front end visualization. Roadmap for future integration",
