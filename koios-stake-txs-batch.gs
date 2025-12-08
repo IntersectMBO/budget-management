@@ -11,11 +11,11 @@
 
 // Configuration
 const KOIOS_API_BASE = "https://api.koios.rest/api/v1";
-const ACCOUNT_ADDRESSES_ENDPOINT = `${KOIOS_API_BASE}/account_addresses`;
-const ADDRESS_TXS_ENDPOINT = `${KOIOS_API_BASE}/address_txs`;
+const STAKE_TXS_ENDPOINT=`${KOIOS_API_BASE}/account_txs`;
 const TX_INFO_ENDPOINT = `${KOIOS_API_BASE}/tx_info`;
 const TX_UTXOS_ENDPOINT = `${KOIOS_API_BASE}/tx_utxos`;
 const TIP_ENDPOINT = `${KOIOS_API_BASE}/tip`;
+const TX_METADATA = `${KOIOS_API_BASE}/tx_metadata`;
 const BATCH_SIZE = 50;
 const FILTER_DATE = "2025-01-01"; // Hardcoded date filter
 
@@ -28,7 +28,15 @@ const SOURCE_SHEET_NAME = "transaction-detetective-suspects";
 const SPREADSHEET_ID = ""; // Paste your spreadsheet ID here
 
 // Option 2: Use spreadsheet URL
-const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/156Hcj4j3_6Pdvn9NLFdOql0_NknEpbnFoJl-eJ9JAm0";
+const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1krE_d59sgTkmQjmkRI4AzN-723k_0d7VgLj3TK8AFVU";
+
+
+function onOpen () {
+  var ui = SpreadsheetApp.getUi();
+  ui.createMenu('🕵️detect transactions')
+  .addItem('run the script', 'processAllStakeAddresses')
+  .addToUi()
+}
 
 /**
  * Main function to process all stake addresses by bucket
@@ -209,15 +217,13 @@ async function processBucket(bucketName, addresses, spreadsheet) {
  */
 async function getTransactionsForStakeAddress(stakeAddress, label, controller, bucket) {
   try {
-    // Get payment addresses
-    const paymentAddresses = getPaymentAddresses(stakeAddress);
-    if (paymentAddresses.length === 0) {
-      console.log(`    No payment addresses found for ${stakeAddress}`);
+
+    //Get transactions for stake addresses
+    const txResponse = getStakeAddressesTransaction(stakeAddress);
+    if (txResponse.length === 0){
+      console.log(`    No transactions found for ${stakeAddress}`);
       return [];
     }
-
-    // Get transactions for all payment addresses
-    const txResponse = getAddressTransactions(paymentAddresses);
     
     // Extract transaction hashes
     const txHashes = txResponse
@@ -230,13 +236,32 @@ async function getTransactionsForStakeAddress(stakeAddress, label, controller, b
 
     // Get detailed transaction information in batches
     const txDetails = [];
-    
+
     for (let i = 0; i < txHashes.length; i += BATCH_SIZE) {
       const batchHashes = txHashes.slice(i, i + BATCH_SIZE);
-      const batchDetails = getTransactionDetails(batchHashes);
-      if (batchDetails && batchDetails.length > 0) txDetails.push(...batchDetails);
+      const [batchDetails, metadata] = await Promise.all([
+        getTransactionDetails(batchHashes),
+        getTransactionMetadata(batchHashes)
+      ]);
+
+      // Combine details with metadata
+      if (batchDetails && batchDetails.length > 0) {
+        const combined = batchDetails.map(tx => {
+          const metaObj = metadata.find(m => m.tx_hash === tx.tx_hash);
+
+          return {
+            ...tx,
+            metadata: JSON.stringify(metaObj?.metadata || ''),
+          };
+        });
+
+        txDetails.push(...combined);
+      }
+
     }
+
     const txDetailsMap = new Map(txDetails.map(tx => [tx.tx_hash, tx]));
+
 
     // ------------------ Fetch UTXO details ------------------
     const txUtxos = [];
@@ -267,31 +292,34 @@ async function getTransactionsForStakeAddress(stakeAddress, label, controller, b
       if (blockTime >= targetTimestamp) {
         const amountAda = lovelaceToAda(txDetail.total_output || "0");
         const feeAda = lovelaceToAda(txDetail.fee || "0");
-        const amountUsd = amountAda * adaUsdPrice;
         const transactionTime = formatTimestamp(blockTime);
 
       // ------------------ New Logic ------------------
       const inputStakeAddrs = txUtxo.inputs.map(i => i.stake_addr).filter(Boolean);
       const txType = inputStakeAddrs.includes(stakeAddress) ? "out" : "in";
-      const specialOutputSum = txUtxo.outputs
+      const outputSum = txUtxo.outputs
         .filter(o => !inputStakeAddrs.includes(o.stake_addr))
         .reduce((sum, o) => sum + parseInt(o.value || 0), 0);
-      const specialOutputAda = lovelaceToAda(specialOutputSum);
-
+      const outputAda = lovelaceToAda(outputSum);
+      const amountUsd = outputAda * adaUsdPrice;
+      let totalOutputAda = 0;
+      (txType === "out") ? totalOutputAda=(outputAda+feeAda) : totalOutputAda=outputAda;
       transactions.push({
         bucket,
         label,
         controller,
         stakeAddress,
-        paymentAddress: paymentAddresses[0] || "",
         transactionHash: tx.tx_hash,
         transactionTime,
         blockHeight: txDetail.block_height || 0,
         amountAda,
-        amountUsd,
         feeAda,
         txType,
-        specialOutputAda
+        outputAda,
+        amountUsd,
+        adaUsdPrice,
+        totalOutputAda,
+        metadata : txDetail.metadata || '',
       });
       }
     });
@@ -314,15 +342,17 @@ function setupBucketSheetHeaders(sheet) {
     "Label",
     "Controller",
     "Stake Address",
-    "Payment Address",
     "Transaction Hash",
     "Transaction Time",
     "Block Height",
-    "Amount (ADA)",
-    "Amount (USD)",
-    "Fee (ADA)",
-    "Tx Type",
-    "Special Output (ADA)"
+    "Total Ouput Amount (ada)",
+    "Transaction Fee (ada)",
+    "Transaction Type",
+    "Balance Delta (ada)",
+    "Balance Delta (usd)",
+    "Ada-USD rate",
+    "Total balance delta (ada)",
+    "Metadata",
   ];
   
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
@@ -348,26 +378,30 @@ function writeTransactionsToSheet(sheet, transactions) {
     tx.label,
     tx.controller,
     tx.stakeAddress,
-    tx.paymentAddress,
     tx.transactionHash,
     tx.transactionTime,
     tx.blockHeight,
     tx.amountAda,
-    tx.amountUsd,
     tx.feeAda,
     tx.txType,
-    tx.specialOutputAda
+    tx.outputAda,
+    tx.amountUsd,
+    tx.adaUsdPrice,
+    tx.totalOutputAda,
+    tx.metadata,
+
   ]);
 
-  sheet.getRange(2, 1, rows.length, 13).setValues(rows);
-
-  sheet.getRange(2, 9, rows.length, 1).setNumberFormat("0.000000");  // Amount ADA
-  sheet.getRange(2, 10, rows.length, 1).setNumberFormat("0.000000"); // Amount USD
-  sheet.getRange(2, 11, rows.length, 1).setNumberFormat("0.000000"); // Fee ADA
-  sheet.getRange(2, 13, rows.length, 1).setNumberFormat("0.000000"); // Special Output ADA
-
-  sheet.autoResizeColumns(1, 13);
-  sheet.getRange(1, 1, rows.length + 1, 13).setBorder(true, true, true, true, true, true);
+  sheet.getRange(2, 1, rows.length, 15).setValues(rows);
+  sheet.getRange(2,7, rows.length, 1).setNumberFormat("0"); // Block hight INT
+  sheet.getRange(2, 8, rows.length, 1).setNumberFormat("0.000");  // Amount ada
+  sheet.getRange(2, 9, rows.length, 1).setNumberFormat("0.000"); // Transaction fee
+  sheet.getRange(2, 11, rows.length, 1).setNumberFormat("0.000"); // Balance delta ada
+  sheet.getRange(2, 12, rows.length, 1).setNumberFormat("0.000"); // Balance delta in USD
+  sheet.getRange(2,13,rows.length ,1).setNumberFormat("0.000000"); // ada - USD Rate 
+  sheet.getRange(2,14,rows.length ,1).setNumberFormat("0.000"); // ada - USD Rate 
+  sheet.autoResizeColumns(1, 15);
+  sheet.getRange(1, 1, rows.length + 1, 15).setBorder(true, true, true, true, true, true);
 }
 
 // ============================================================================
@@ -404,11 +438,13 @@ function apiCall(endpoint, data) {
   }
 }
 
-function getPaymentAddresses(stakeAddress) { return apiCall(ACCOUNT_ADDRESSES_ENDPOINT, { _stake_addresses: [stakeAddress] })[0]?.addresses || []; }
-function getAddressTransactions(addresses) { return apiCall(ADDRESS_TXS_ENDPOINT, { _addresses: addresses }); }
+// function getPaymentAddresses(stakeAddress) { return apiCall(ACCOUNT_ADDRESSES_ENDPOINT, { _stake_addresses: [stakeAddress] })[0]?.addresses || []; }
+// function getAddressTransactions(addresses) { return apiCall(ADDRESS_TXS_ENDPOINT, { _addresses: addresses }); }
+function getStakeAddressesTransaction(stakeAddress) {return apiCall(STAKE_TXS_ENDPOINT, { _stake_address : stakeAddress}); }
 function getTransactionDetails(txHashes) { return apiCall(TX_INFO_ENDPOINT, { _tx_hashes: txHashes }); }
 function getTransactionUtxos(txHashes) { return apiCall(TX_UTXOS_ENDPOINT, { _tx_hashes: txHashes }); }
 function lovelaceToAda(lovelace) { return parseFloat(lovelace) / 1000000; }
+function getTransactionMetadata(txHashes) {return apiCall(TX_METADATA,{_tx_hashes: txHashes });} 
 
 function getAdaUsdPrice(date) {
   try {
