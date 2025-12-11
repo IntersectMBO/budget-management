@@ -13,9 +13,7 @@
 const KOIOS_API_BASE = "https://api.koios.rest/api/v1";
 const STAKE_TXS_ENDPOINT=`${KOIOS_API_BASE}/account_txs`;
 const TX_INFO_ENDPOINT = `${KOIOS_API_BASE}/tx_info`;
-const TX_UTXOS_ENDPOINT = `${KOIOS_API_BASE}/tx_utxos`;
 const TIP_ENDPOINT = `${KOIOS_API_BASE}/tip`;
-const TX_METADATA = `${KOIOS_API_BASE}/tx_metadata`;
 const BATCH_SIZE = 50;
 const FILTER_DATE = "2025-01-01"; // Hardcoded date filter
 
@@ -34,15 +32,34 @@ const SPREADSHEET_URL = "https://docs.google.com/spreadsheets/d/1krE_d59sgTkmQjm
 function onOpen () {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🕵️detect transactions')
-  .addItem('run the script', 'processAllStakeAddresses')
-  .addToUi()
+  .addItem('run the script', 'promptForMonth')
+  .addToUi();
+}
+
+function promptForMonth() {
+  const ui = SpreadsheetApp.getUi();
+  const result = ui.prompt(
+    "Enter Month",
+    "Please enter a month in format YYYY-MM (example: 2025-01):",
+    ui.ButtonSet.OK_CANCEL
+  );
+
+  const button = result.getSelectedButton();
+  const input = result.getResponseText();
+
+  if (button === ui.Button.OK && /^\d{4}-\d{2}-\d{2}$/.test(input)) {
+    console.log("STARTING EB")
+    processAllStakeAddresses(input); // Pass the selected month
+  } else {
+    ui.alert("Invalid format. Use YYYY-MM-DD.");
+  }
 }
 
 /**
  * Main function to process all stake addresses by bucket
  * This is the function you'll run from Google Apps Script
  */
-function processAllStakeAddresses() {
+function processAllStakeAddresses(FILTER_DATE) {
   try {
     console.log("Starting batch processing of stake addresses...");
 
@@ -61,7 +78,7 @@ function processAllStakeAddresses() {
     // Process each bucket
     for (const [bucketName, addresses] of Object.entries(data)) {
       console.log(`Processing bucket: ${bucketName} with ${addresses.length} addresses`);
-      processBucket(bucketName, addresses, spreadsheet);
+      processBucket(bucketName, addresses, spreadsheet, FILTER_DATE);
     }
 
     console.log("Batch processing completed successfully!");
@@ -159,7 +176,7 @@ function readStakeAddressData(sourceSheet) {
  * @param {Array} addresses - Array of address objects
  * @param {Spreadsheet} spreadsheet - The target spreadsheet
  */
-async function processBucket(bucketName, addresses, spreadsheet) {
+async function processBucket(bucketName, addresses, spreadsheet ,date) {
   try {
     console.log(`Processing bucket: ${bucketName}`);
     
@@ -181,7 +198,8 @@ async function processBucket(bucketName, addresses, spreadsheet) {
           addressInfo.stakeAddress,
           addressInfo.label,
           addressInfo.controller,
-          bucketName
+          bucketName,
+          date
         );
         
         allTransactions.push(...transactions);
@@ -215,7 +233,7 @@ async function processBucket(bucketName, addresses, spreadsheet) {
  * @param {string} bucket - The bucket name for this address
  * @returns {Array} Array of transaction objects
  */
-async function getTransactionsForStakeAddress(stakeAddress, label, controller, bucket) {
+async function getTransactionsForStakeAddress(stakeAddress, label, controller, bucket, FILTER_DATE) {
   try {
 
     //Get transactions for stake addresses
@@ -239,38 +257,12 @@ async function getTransactionsForStakeAddress(stakeAddress, label, controller, b
 
     for (let i = 0; i < txHashes.length; i += BATCH_SIZE) {
       const batchHashes = txHashes.slice(i, i + BATCH_SIZE);
-      const [batchDetails, metadata] = await Promise.all([
-        getTransactionDetails(batchHashes),
-        getTransactionMetadata(batchHashes)
-      ]);
-
-      // Combine details with metadata
-      if (batchDetails && batchDetails.length > 0) {
-        const combined = batchDetails.map(tx => {
-          const metaObj = metadata.find(m => m.tx_hash === tx.tx_hash);
-
-          return {
-            ...tx,
-            metadata: JSON.stringify(metaObj?.metadata || ''),
-          };
-        });
-
-        txDetails.push(...combined);
-      }
+      const batchDetails = getTransactionDetails(batchHashes);
+      if (batchDetails && batchDetails.length > 0) txDetails.push(...batchDetails);
 
     }
 
     const txDetailsMap = new Map(txDetails.map(tx => [tx.tx_hash, tx]));
-
-
-    // ------------------ Fetch UTXO details ------------------
-    const txUtxos = [];
-    for (let i = 0; i < txHashes.length; i += BATCH_SIZE) {
-      const batchHashes = txHashes.slice(i, i + BATCH_SIZE);
-      const batchUtxos = getTransactionUtxos(batchHashes);
-      if (batchUtxos && batchUtxos.length > 0) txUtxos.push(...batchUtxos);
-    }
-    const txUtxosMap = new Map(txUtxos.map(u => [u.tx_hash, u]));
 
     // ------------------ ADA price ------------------
      // Get USD price for the filter date
@@ -283,9 +275,9 @@ async function getTransactionsForStakeAddress(stakeAddress, label, controller, b
       if (!tx.tx_hash) return;
 
       const txDetail = txDetailsMap.get(tx.tx_hash);
-      const txUtxo = txUtxosMap.get(tx.tx_hash);
-      if (!txDetail || !txUtxo) return;
 
+      // const txUtxo = txUtxosMap.get(tx.tx_hash);
+      if (!txDetail) return;
       const blockTime = txDetail.tx_timestamp || 0;
 
       // Check if transaction is after the filter date
@@ -295,13 +287,14 @@ async function getTransactionsForStakeAddress(stakeAddress, label, controller, b
         const transactionTime = formatTimestamp(blockTime);
 
       // ------------------ New Logic ------------------
-      const inputStakeAddrs = txUtxo.inputs.map(i => i.stake_addr).filter(Boolean);
+      const inputStakeAddrs = txDetail.inputs.map(i => i.stake_addr).filter(Boolean);
       const txType = inputStakeAddrs.includes(stakeAddress) ? "out" : "in";
-      const outputSum = txUtxo.outputs
+      const outputSum = txDetail.outputs
         .filter(o => !inputStakeAddrs.includes(o.stake_addr))
         .reduce((sum, o) => sum + parseInt(o.value || 0), 0);
       const outputAda = lovelaceToAda(outputSum);
       const amountUsd = outputAda * adaUsdPrice;
+      const withdrawalAmount = lovelaceToAda(txDetail.withdrawals?.find(w => w.stake_addr === stakeAddress)?.amount || 0);
       let totalOutputAda = 0;
       (txType === "out") ? totalOutputAda=(outputAda+feeAda) : totalOutputAda=outputAda;
       transactions.push({
@@ -319,7 +312,8 @@ async function getTransactionsForStakeAddress(stakeAddress, label, controller, b
         amountUsd,
         adaUsdPrice,
         totalOutputAda,
-        metadata : txDetail.metadata || '',
+        withdrawalAmount,
+        metadata : JSON.stringify(txDetail.metadata, null, 2)|| ''
       });
       }
     });
@@ -352,6 +346,7 @@ function setupBucketSheetHeaders(sheet) {
     "Balance Delta (usd)",
     "Ada-USD rate",
     "Total balance delta (ada)",
+    "Withdrawal Amount",
     "Metadata",
   ];
   
@@ -388,11 +383,12 @@ function writeTransactionsToSheet(sheet, transactions) {
     tx.amountUsd,
     tx.adaUsdPrice,
     tx.totalOutputAda,
+    tx.withdrawalAmount,
     tx.metadata,
 
   ]);
 
-  sheet.getRange(2, 1, rows.length, 15).setValues(rows);
+  sheet.getRange(2, 1, rows.length, 16).setValues(rows);
   sheet.getRange(2,7, rows.length, 1).setNumberFormat("0"); // Block hight INT
   sheet.getRange(2, 8, rows.length, 1).setNumberFormat("0.000");  // Amount ada
   sheet.getRange(2, 9, rows.length, 1).setNumberFormat("0.000"); // Transaction fee
@@ -400,8 +396,8 @@ function writeTransactionsToSheet(sheet, transactions) {
   sheet.getRange(2, 12, rows.length, 1).setNumberFormat("0.000"); // Balance delta in USD
   sheet.getRange(2,13,rows.length ,1).setNumberFormat("0.000000"); // ada - USD Rate 
   sheet.getRange(2,14,rows.length ,1).setNumberFormat("0.000"); // ada - USD Rate 
-  sheet.autoResizeColumns(1, 15);
-  sheet.getRange(1, 1, rows.length + 1, 15).setBorder(true, true, true, true, true, true);
+  sheet.autoResizeColumns(1, 16);
+  sheet.getRange(1, 1, rows.length + 1, 16).setBorder(true, true, true, true, true, true);
 }
 
 // ============================================================================
@@ -441,10 +437,16 @@ function apiCall(endpoint, data) {
 // function getPaymentAddresses(stakeAddress) { return apiCall(ACCOUNT_ADDRESSES_ENDPOINT, { _stake_addresses: [stakeAddress] })[0]?.addresses || []; }
 // function getAddressTransactions(addresses) { return apiCall(ADDRESS_TXS_ENDPOINT, { _addresses: addresses }); }
 function getStakeAddressesTransaction(stakeAddress) {return apiCall(STAKE_TXS_ENDPOINT, { _stake_address : stakeAddress}); }
-function getTransactionDetails(txHashes) { return apiCall(TX_INFO_ENDPOINT, { _tx_hashes: txHashes }); }
-function getTransactionUtxos(txHashes) { return apiCall(TX_UTXOS_ENDPOINT, { _tx_hashes: txHashes }); }
+function getTransactionDetails(txHashes) { 
+  return apiCall(TX_INFO_ENDPOINT, { 
+    _tx_hashes: txHashes, 
+    _inputs: true,
+    _metadata: true,
+    _withdrawals: true,
+    _assets: true,
+    _certs: true}); }
+// function getTransactionUtxos(txHashes) { return apiCall(TX_UTXOS_ENDPOINT, { _tx_hashes: txHashes }); }
 function lovelaceToAda(lovelace) { return parseFloat(lovelace) / 1000000; }
-function getTransactionMetadata(txHashes) {return apiCall(TX_METADATA,{_tx_hashes: txHashes });} 
 
 function getAdaUsdPrice(date) {
   try {
