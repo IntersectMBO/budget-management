@@ -19,7 +19,7 @@
     ],
     "destination": [
       {
-        "label": "Intersect’s Custodian Environments",
+        "label": "Intersect’s Custodian Environment",
         "details": {
           "anchorUrl": "ipfs://bafkreiejcf6uxsztun4qiz6gqykwf73cx56lssr55phvvzmy5t2mmw276q",
           "anchorDataHash": "143e018bc9dbe5aaa3dcdef3401bd84b61c14beceb523490925b87f1b46f203b"
