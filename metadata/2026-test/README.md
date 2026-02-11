@@ -17,7 +17,7 @@ We only cover notable outputs, other outputs may be required by the orchestratin
 70,000,000 ada to Intersect’s Custodian Environment: addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw
 
 No change from the UTxO will be returned or remain at the Treasury Reserve Contract address: [addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj]
-(https://beta.cexplorer.io/address/addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj)
+(https://beta.cexplorer.i/address/addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj)
 
 ## Transaction Metadata
 See [metadata.json](./metadata.json). 
