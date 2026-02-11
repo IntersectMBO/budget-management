@@ -1,0 +1,202 @@
+name: Validate Metadata
+
+on:
+  pull_request:
+    paths:
+      - 'metadata/**'
+      - '.github/workflows/validate-metadata.yml'
+  push:
+    branches:
+      - main
+      - test-validation
+    paths:
+      - 'metadata/**'
+
+jobs:
+  validate-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect new metadata folders
+        id: detect-folders
+        run: |
+          # Get the base branch commit (for PR) or previous commit (for push)
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_COMMIT=${{ github.event.pull_request.base.sha }}
+          else
+            BASE_COMMIT=${{ github.event.before }}
+          fi
+          
+          # If BASE_COMMIT is null (initial commit), use git's empty tree
+          if [ -z "$BASE_COMMIT" ] || [ "$BASE_COMMIT" == "0000000000000000000000000000000000000000" ]; then
+            BASE_COMMIT=$(git hash-object -t tree /dev/null)
+          fi
+          
+          # Find new folders in metadata directory
+          NEW_FOLDERS=$(git diff --name-only --diff-filter=A $BASE_COMMIT HEAD -- metadata/ | \
+            grep -E '^metadata/[^/]+/' | \
+            cut -d/ -f2 | \
+            sort -u)
+          
+          echo "new_folders<<EOF" >> $GITHUB_OUTPUT
+          echo "$NEW_FOLDERS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "Detected new folders: $NEW_FOLDERS"
+
+      - name: Validate folder naming (date format)
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
+          DATE_PATTERN="^[0-9]{4}-[0-9]{2}-[0-9]{2}"
+          INVALID_FOLDERS=""
+          
+          while IFS= read -r folder; do
+            if [ -z "$folder" ]; then
+              continue
+            fi
+            
+            if ! [[ "$folder" =~ $DATE_PATTERN ]]; then
+              INVALID_FOLDERS="$INVALID_FOLDERS\n  - $folder"
+            else
+              echo "✓ Valid folder name: $folder"
+            fi
+          done <<< "$NEW_FOLDERS"
+          
+          if [ ! -z "$INVALID_FOLDERS" ]; then
+            echo "❌ Error: The following folders do not start with a date (YYYY-MM-DD format):$INVALID_FOLDERS"
+            exit 1
+          fi
+
+      - name: Set up Node.js
+        if: steps.detect-folders.outputs.new_folders != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install validation tools
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: npm install -g cspell markdown-link-check ajv-cli
+
+      - name: Run spell check on JSON and Markdown files
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
+          SPELL_CHECK_FAILED=false
+          
+          while IFS= read -r folder; do
+            if [ -z "$folder" ]; then
+              continue
+            fi
+            
+            echo "🔍 Checking spelling in metadata/$folder..."
+            
+            # Check .md files
+            if find "metadata/$folder" -name "*.md" -type f 2>/dev/null | grep -q .; then
+              if cspell "metadata/$folder/**/*.md" 2>&1 | grep -q "issue"; then
+                echo "⚠️  Spelling issues found in Markdown files"
+                cspell "metadata/$folder/**/*.md" || true
+                SPELL_CHECK_FAILED=true
+              else
+                echo "✓ No spelling issues in Markdown files"
+              fi
+            fi
+            
+            # Check .json files
+            if find "metadata/$folder" -name "*.json" -type f 2>/dev/null | grep -q .; then
+              if cspell "metadata/$folder/**/*.json" 2>&1 | grep -q "issue"; then
+                echo "⚠️  Spelling issues found in JSON files"
+                cspell "metadata/$folder/**/*.json" || true
+                SPELL_CHECK_FAILED=true
+              else
+                echo "✓ No spelling issues in JSON files"
+              fi
+            fi
+          done <<< "$NEW_FOLDERS"
+          
+          if [ "$SPELL_CHECK_FAILED" = true ]; then
+            echo "❌ Spell check failed. Please review and fix spelling issues."
+            exit 1
+          fi
+
+      - name: Validate JSON files
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
+          JSON_VALIDATION_FAILED=false
+          
+          while IFS= read -r folder; do
+            if [ -z "$folder" ]; then
+              continue
+            fi
+            
+            echo "🔍 Validating JSON files in metadata/$folder..."
+            
+            # Find and validate all .json files
+            while IFS= read -r json_file; do
+              if [ -z "$json_file" ]; then
+                continue
+              fi
+              
+              if ! python3 -m json.tool "$json_file" > /dev/null 2>&1; then
+                echo "❌ Invalid JSON syntax in: $json_file"
+                python3 -m json.tool "$json_file" || true
+                JSON_VALIDATION_FAILED=true
+              else
+                echo "✓ Valid JSON: $json_file"
+              fi
+            done < <(find "metadata/$folder" -name "*.json" -type f 2>/dev/null)
+          done <<< "$NEW_FOLDERS"
+          
+          if [ "$JSON_VALIDATION_FAILED" = true ]; then
+            echo "❌ JSON validation failed. Please fix the JSON files."
+            exit 1
+          fi
+
+      - name: Check markdown links
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
+          LINK_CHECK_FAILED=false
+          
+          while IFS= read -r folder; do
+            if [ -z "$folder" ]; then
+              continue
+            fi
+            
+            echo "🔗 Checking links in metadata/$folder..."
+            
+            # Find all .md files and check links
+            while IFS= read -r md_file; do
+              if [ -z "$md_file" ]; then
+                continue
+              fi
+              
+              echo "Checking: $md_file"
+              # markdown-link-check returns non-zero if issues found
+              if ! markdown-link-check -q "$md_file" 2>&1; then
+                echo "⚠️  Link issues found in: $md_file"
+                markdown-link-check "$md_file" || true
+                LINK_CHECK_FAILED=true
+              else
+                echo "✓ All links valid in: $md_file"
+              fi
+            done < <(find "metadata/$folder" -name "*.md" -type f 2>/dev/null)
+          done <<< "$NEW_FOLDERS"
+          
+          if [ "$LINK_CHECK_FAILED" = true ]; then
+            echo "⚠️  Some links could not be verified. Please review."
+          fi
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "✅ All validation checks passed!"
+          echo "  - Folder names follow date format (YYYY-MM-DD)"
+          echo "  - No spelling issues found"
+          echo "  - JSON files are valid"
+          echo "  - Markdown links are valid"

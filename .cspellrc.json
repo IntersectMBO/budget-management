@@ -1,0 +1,28 @@
+{
+  "version": "0.2",
+  "language": "en",
+  "words": [
+    "Cardano",
+    "Intersect",
+    "treasury",
+    "disburse",
+    "metadata",
+    "blockchain",
+    "cryptocurrency",
+    "validator",
+    "transactions",
+    "ledger",
+    "UTxO",
+    "stakeholder"
+  ],
+  "ignorePaths": [
+    ".git",
+    "node_modules",
+    ".github"
+  ],
+  "import": [],
+  "ignoreRegExpList": [
+    "^\"[^\"]*\":.*\\$",
+    "\\$\\{.*\\}"
+  ]
+}
