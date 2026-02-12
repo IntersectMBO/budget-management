@@ -86,7 +86,7 @@ jobs:
       - name: Create spell check script
         run: |
           mkdir -p /tmp/scripts
-          cat > /tmp/scripts/check_spelling.sh << 'SCRIPT
+          cat > /tmp/scripts/check_spelling.sh << 'SCRIPT'
           #!/bin/bash
           set -e
           FILES_TO_CHECK="$1"
