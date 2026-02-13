@@ -48,174 +48,19 @@ jobs:
           
           echo "Detected new folders: $NEW_FOLDERS"
 
-      - name: Validate folder naming (date format)
+      - name: Set up Python
         if: steps.detect-folders.outputs.new_folders != ''
-        run: |
-          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
-          DATE_PATTERN="^[0-9]{4}-[0-9]{2}-[0-9]{2}"
-          INVALID_FOLDERS=""
-          
-          while IFS= read -r folder; do
-            if [ -z "$folder" ]; then
-              continue
-            fi
-            
-            if ! [[ "$folder" =~ $DATE_PATTERN ]]; then
-              INVALID_FOLDERS="$INVALID_FOLDERS\n  - $folder"
-            else
-              echo "✓ Valid folder name: $folder"
-            fi
-          done <<< "$NEW_FOLDERS"
-          
-          if [ ! -z "$INVALID_FOLDERS" ]; then
-            echo "❌ Error: The following folders do not start with a date (YYYY-MM-DD format):"
-            echo -e "$INVALID_FOLDERS"
-            exit 1
-          fi
-
-      - name: Set up Node.js
-        if: steps.detect-folders.outputs.new_folders != ''
-        uses: actions/setup-node@v4
+        uses: actions/setup-python@v4
         with:
-          node-version: '18'
+          python-version: '3.11'
 
-      - name: Install validation tools
-        if: steps.detect-folders.outputs.new_folders != ''
-        run: npm install -g cspell
-
-      - name: Create spell check script
-        run: |
-          mkdir -p /tmp/scripts
-          cat > /tmp/scripts/check_spelling.sh << 'SCRIPT'
-          #!/bin/bash
-          set -e
-          FILES_TO_CHECK="$1"
-          FOLDER="$2"
-          
-          echo "Checking spelling in $FOLDER..."
-          
-          FAILED=false
-          while IFS= read -r file; do
-            if [ -z "$file" ]; then
-              continue
-            fi
-            
-            OUTPUT=$(cspell "$file" 2>&1 || true)
-            # Check if cspell found any issues
-            if echo "$OUTPUT" | grep -E "Unknown word|issue"; then
-              echo "❌ Found spelling issue in: $file"
-              echo "$OUTPUT" | head -20
-              FAILED=true
-            else
-              echo "✓ $file"
-            fi
-          done <<< "$FILES_TO_CHECK"
-          
-          if [ "$FAILED" = true ]; then
-            exit 1
-          fi
-          SCRIPT
-          chmod +x /tmp/scripts/check_spelling.sh
-
-      - name: Run spell check on new folders
+      - name: Run metadata validation
         if: steps.detect-folders.outputs.new_folders != ''
         run: |
-          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
-          
-          while IFS= read -r folder; do
-            if [ -z "$folder" ]; then
-              continue
-            fi
-            
-            FILES=$(find "metadata/$folder" \( -name "*.md" -o -name "*.json" \) -type f 2>/dev/null)
-            
-            if [ ! -z "$FILES" ]; then
-              /tmp/scripts/check_spelling.sh "$FILES" "$folder" || exit 1
-            else
-              echo "✓ No files to check in $folder"
-            fi
-          done <<< "$NEW_FOLDERS"
+          python3 .github/scripts/validate_metadata.py \
+            --folders "${{ steps.detect-folders.outputs.new_folders }}" \
+            --metadata-path metadata
 
-      - name: Validate JSON files
-        if: steps.detect-folders.outputs.new_folders != ''
-        run: |
-          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
-          
-          while IFS= read -r folder; do
-            if [ -z "$folder" ]; then
-              continue
-            fi
-            
-            echo "📋 Validating JSON files in metadata/$folder..."
-            
-            while IFS= read -r json_file; do
-              if [ -z "$json_file" ]; then
-                continue
-              fi
-              
-              if python3 -m json.tool "$json_file" > /dev/null 2>&1; then
-                echo "✓ Valid JSON: $json_file"
-              else
-                echo "❌ Invalid JSON syntax in: $json_file"
-                python3 -m json.tool "$json_file" || true
-                exit 1
-              fi
-            done < <(find "metadata/$folder" -name "*.json" -type f 2>/dev/null)
-          done <<< "$NEW_FOLDERS"
-
-      - name: Check markdown links
-        if: steps.detect-folders.outputs.new_folders != ''
-        run: |
-          NEW_FOLDERS="${{ steps.detect-folders.outputs.new_folders }}"
-          
-          while IFS= read -r folder; do
-            if [ -z "$folder" ]; then
-              continue
-            fi
-            
-            echo "🔗 Checking links in metadata/$folder..."
-            
-            while IFS= read -r md_file; do
-              if [ -z "$md_file" ]; then
-                continue
-              fi
-              
-              echo "  Checking: $md_file"
-              
-              # Extract URLs from markdown
-              URLS=$(grep -oP '(?<=\()https?://[^)]+\)?' "$md_file" 2>/dev/null || true)
-              
-              if [ -z "$URLS" ]; then
-                echo "    ✓ No external links"
-                continue
-              fi
-              
-              # Check each URL
-              while IFS= read -r url; do
-                if [ -z "$url" ]; then
-                  continue
-                fi
-                
-                # Remove trailing paren if present
-                url=${url%)}
-                
-                # Basic validation - check for valid domain format
-                if echo "$url" | grep -E '^https?://[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}' > /dev/null; then
-                  echo "    ✓ $url"
-                else
-                  echo "    ❌ Invalid URL: $url"
-                  exit 1
-                fi
-              done <<< "$URLS"
-            done < <(find "metadata/$folder" -name "*.md" -type f 2>/dev/null)
-          done <<< "$NEW_FOLDERS"
-
-      - name: Success summary
+      - name: Validation complete
         if: success()
-        run: |
-          echo ""
-          echo "✅ All validation checks passed!"
-          echo "  ✓ Folder names follow date format (YYYY-MM-DD)"
-          echo "  ✓ No spelling issues found"
-          echo "  ✓ JSON files are valid"
-          echo "  ✓ Markdown links are properly formatted"
+        run: echo "✅ All metadata validation checks passed!"
