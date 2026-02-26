@@ -1,5 +1,5 @@
 {
-  "1694": {
+  "1694": 
     "@context": [
       "https://raw.githubusercontent.com/cardano-foundation/CIPs",
       "/refs/heads/master/CIP-0100/cip-0100.common.jsonld"
