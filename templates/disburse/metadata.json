@@ -1,0 +1,20 @@
+{
+ "@context": "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-contracts/refs/heads/main/offchain/src/metadata/context.jsonld",
+  "hashAlgorithm": "blake2b-256",
+  "txAuthor": "c27...",
+  "instance": "1ef...",
+  "body": {
+    "event": "disburse",
+    "label": "Human Readable Title",
+    "description": "long-form markdown annotated description",
+    "justification": "long-form markdown justification",
+    "destination": {
+      "label": "Coinbase",
+      "details": {
+        "anchorUrl": "ipfs://...",
+        "anchorDataHash": "..."
+      }
+    },
+    "estimatedReturn": 1234
+  }
+}
