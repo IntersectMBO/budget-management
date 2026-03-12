@@ -1,0 +1,36 @@
+{
+    "@context": {
+        "@language": "en-us"
+    },
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "PO123",
+        "otherIdentifiers": [],
+        "label": "Human Readable Title",
+        "description": "long-form markdown annotated description",
+        "reason": "long-form reason for the modification",
+        "vendor": {
+            "label": "Sundae Labs",
+            "details": {
+                "anchorUrl": "ipfs://...",
+                "anchorDataHash": "..."
+            }
+        },
+        "contract": {
+            "anchorUrl": "ipfs://...",
+            "anchorDataHash": "..."
+        },
+        "milestones": {
+            "001": {
+                "identifier": "001",
+                "label": "...",
+                "description": "A human readable description",
+                "acceptanceCriteria": "...",
+                "details": {}
+            }
+        }
+    }
+}
