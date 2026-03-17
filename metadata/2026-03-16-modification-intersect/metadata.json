@@ -1,0 +1,60 @@
+{
+    "@context": {
+        "@language": "en-us"
+    },
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "EG-0002-25",
+        "otherIdentifiers": [],
+        "label": [
+            "Intersect MBO - A member-based organization for the Cardano ecos",
+            "ystem"
+        ],
+        "description": "long-form markdown annotated description",
+        "reason": "long-form reason for the modification",
+        "vendor": {
+            "label": [
+                "addr1q9qk3n36gv5pclrym2dhedv9hqs2dchkt0nf36tscap3paaf7ma3972u24k",
+                "8d0ejjgakphc9yp6zsxc2q0nsjmuvcmxsly0a5a"
+            ]
+        },
+        "contract": {
+            "anchorUrl": "ipfs://...",
+            "anchorDataHash": "..."
+        },
+        "milestones": [{
+            "m-2": {
+                "identifier": "m-2",
+                "label": "Intersect Quarterly Progress 1",
+                "description": "A human readable description",
+                "acceptanceCriteria": "...",
+                "details": ["Changing milestone delivery due date from ",
+                            "31-10-2025 to 30-12-2025, ",
+                            "milestone payment date from 30-11-2025 to 30-01-2026."]
+            }
+        },{
+            "m-3": {
+                "identifier": "m-3",
+                "label": "Intersect Quarterly Progress 2",
+                "description": "A human readable description",
+                "acceptanceCriteria": "...",
+                "details": ["Changing milestone delivery due date from ",
+                            "31-01-2026 to 30-03-2026, ",
+                            "milestone payment date from 28-02-2026 to 30-04-2026."]
+            }
+        },{
+            "m-4": {
+                "identifier": "m-4",
+                "label": "Intersect Quarterly Progress 3",
+                "description": "A human readable description",
+                "acceptanceCriteria": "...",
+                "details":  ["Changing milestone delivery due date from ",
+                            "30-04-2026 to 30-06-2026, ",
+                            "milestone payment date from 30-05-2026 to 30-07-2026."]
+            }
+        }]
+    }
+}
