@@ -38,6 +38,9 @@ The UTxO marked ['EG-0002-25']
 - Intersect Admin
   - Admin 2 keyhash : a664de561ccd2ca9a07c060d4dd7cea4dc68ba89d4bf04b21ff0726f
   - Admin 3 keyhash : c236d8dc9441605238a5fe9cc7e6c1a79903289a4249c33122bf9627
+- The vendor
+  - Vendor payment keyhash : 4168ce3a43281c7c64da9b7cb585b820a6e2f65be698e970c74310f7
+  - Vendor wallet address : addr1q9qk3n36gv5pclrym2dhedv9hqs2dchkt0nf36tscap3paaf7ma3972u24k8d0ejjgakphc9yp6zsxc2q0nsjmuvcmxsly0a5a
 
 ## Transaction Metadata
 
