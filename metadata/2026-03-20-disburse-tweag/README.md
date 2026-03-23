@@ -2,8 +2,6 @@
 
 ## Transaction Inputs
 
-The UTxO marked ['insert label']
-
 #### UTXO: `03ad9a0043afc133ccb5cd1f031ba24b29b5dc8fb1a9d8c0584fd8b7ddc94e0e#2`
 
 ## The UTxO Metadata
@@ -18,11 +16,11 @@ Metadata present in the chosen UTxO
 
 We only cover notable outputs, other outputs may be required by the orchestrating wallet to cover transaction fees.
 
-#### DESTINATION:[]
+#### DESTINATION:`addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw`
 
 #### AMOUNT_ADA: `570323 ada`
 
-570,323 ada is disbursed from ...
+570,323 ada is disbursed from the Treasury Reserve Contract (addr1xxz…cqxj) in one transaction to an authorized custodian with Cardano Development Holdings, which is Intersect’s Custodian Environments address (addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw)
 
 ## Change for Treasury Reserve Contract
 

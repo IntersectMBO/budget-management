@@ -12,12 +12,11 @@
       {
         "label": "Intersect Custodian Environment",
         "details": {
-          "anchorUrl": "ipfs://",
-          "anchorDataHash": ""
+          "anchorUrl": "ipfs://bafkreihtuxnaysyti2ottufntt36tl4mjdbov3xmf2iemxyer6zofd744i",
+          "anchorDataHash": "ef83c4d2996b44c08f306a099acde4f47702181d56053fc40ef72e5879ddba4e"
         }
       }
-    ],
-    "estimatedReturn": 1761307200000
+    ]
   }
 }
 
