@@ -5,9 +5,17 @@
   "instance": "1ef...",
   "body": {
     "event": "disburse",
-    "label": "",
-    "description": [],
-    "justification": [],
+    "label": "Withdrawing remaining ada allocated for Tweag proposal",
+    "description": [
+      "570,323 ADA will be withdrawn from the Treasury Reserve ",
+      "Contract (TRC)"
+    ],
+    "justification": [
+      "Remaining 570,323 ADA will be withdrawn from the Treasury ",
+      "Reserve Contract (TRC) to cover obligations that have been ",
+      "signed under TWEAG’s Proposals for multiple core budget ",
+      "projects for Cardano 2025 SoW."
+    ],
     "destination": [
       {
         "label": "Intersect Custodian Environment",
@@ -19,5 +27,3 @@
     ]
   }
 }
-
-
