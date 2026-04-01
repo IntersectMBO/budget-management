@@ -8,7 +8,7 @@
 
 Metadata present in the chosen UTxO
 
-#### LABEL: `"Swapping Ada allocated for Tweag proposal to USDA and USDM"`
+#### PREV LABEL: `"Swapping Ada allocated for Tweag proposal to USDA and USDM"`
 
 #### IDENTIFIER: `UTXO-EC-0016-25`
 
