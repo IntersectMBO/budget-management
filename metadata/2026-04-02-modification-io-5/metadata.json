@@ -1,0 +1,71 @@
+{
+    "@context": {
+        "@language": "en-us"
+    },
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "EC-0002-25-05",
+        "otherIdentifiers": [],
+        "label": "Input Output Engineering Core Development Proposal (5of6)",
+        "description": [
+          "The proposed adjustments specify new completion dates for each ",
+          "of the milestones MS14.6 & MS14.9 of Plutus Core Project. These",
+          " revisions are a direct and necessary consequence of unforeseen",
+          " technical and external constraints."
+        ],
+        "reason": [
+          "This Change Request Form is being submitted to align the ",
+          "referenced milestones and completion dates with the revised ",
+          "technical realities identified during the current phase of the ",
+          "project. The need for this revision is based on new and ",
+          "previously undiscovered technical data/requirements identified ",
+          "during the execution of the Scope of Work (“SOW”).\nThe primary ",
+          "drivers for these changes across all the listed initiatives are:",
+          "\n- Development complexities identified: Identification of ",
+          "previously unknown or undiscoverable technical requirements ",
+          "necessitating additional development work to meet deliverables ",
+          "and acceptance criteria.\n- Infrastructure constraint and/or ",
+          "dependency delay specifically new Ledger era."
+        ],
+        "vendor": {
+            "label": "Input Output Engineering Core Development Proposal (5of6)"
+        },
+        "contract": {
+            "anchorUrl": "ipfs://...",
+            "anchorDataHash": "..."
+        },
+        "milestones": [
+            {
+                "MS-6": {
+                    "identifier": "MS-6",
+                    "label": "CIP-0112: Observe script type",
+                    "description": [
+                        "MS14.6 - Plutus Core: CIP-0112: Observe script type ",
+                        "Deliverables: A new script purpose - Observe, for Plutus V4"
+                    ],
+                    "acceptanceCriteria": "...",
+                    "details": [
+                        "Changing milestone payment date from 30-04-2026 to 30-07-2026"
+                    ]
+                }
+            }, 
+            {
+                "MS-9": {
+                    "identifier": "MS-9",
+                    "label": "Introduce Plutus V4 as a new Plutus ledger language version",
+                    "description": [
+                        "MS14.9 - Plutus Core: Introduce Plutus V4 as a new Plutus ledger",
+                        " language version Deliverables: Plutus V4"
+                    ],
+                    "acceptanceCriteria": "...",
+                    "details": [
+                        "Changing milestone payment date from 30-04-2026 to 30-07-2026"
+                    ]
+                }
+            }
+        ]
+    }
+}
