@@ -1,0 +1,55 @@
+{
+    "@context": {
+        "@language": "en-us"
+    },
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "",
+        "otherIdentifiers": [],
+        "label": "",
+        "description": [
+       
+        ],
+        "reason": [
+   
+        ],
+        "vendor": {
+            "label": ""
+        },
+        "contract": {
+            "anchorUrl": "ipfs://...",
+            "anchorDataHash": "..."
+        },
+        "milestones": [
+            {
+                "MS-": {
+                    "identifier": "MS-",
+                    "label": "",
+                    "description": [
+                   
+                    ],
+                    "acceptanceCriteria": "...",
+                    "details": [
+                      
+                    ]
+                }
+            }, 
+            {
+                "MS-": {
+                    "identifier": "MS-",
+                    "label": "",
+                    "description": [
+                   
+                    ],
+                    "acceptanceCriteria": "...",
+                    "details": [
+
+                    ]
+                }
+            }
+        ]
+    }
+}
