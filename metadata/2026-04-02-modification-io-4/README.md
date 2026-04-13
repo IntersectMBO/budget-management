@@ -33,8 +33,8 @@ The UTxO marked `EC-0002-25-04`
   - Admin 2 keyhash : a664de561ccd2ca9a07c060d4dd7cea4dc68ba89d4bf04b21ff0726f
   - Admin 3 keyhash : c236d8dc9441605238a5fe9cc7e6c1a79903289a4249c33122bf9627
 - The vendor
-  - Vendor payment keyhash :
-  - Vendor wallet address :
+  - Vendor payment keyhash : 33afc56ecef7fc370f59d5574416826d6bd3d1f88e0f449ed5ae79f5
+  - Vendor wallet address : addr1qye6l3twemmlcdc0t824w3qksfkkh573lz8q73y76kh8na0ua8vtvcf4r53sgychpd696knp4suy8f3mwgyt7d33cjds499p2r
 
 ## Transaction Metadata
 
