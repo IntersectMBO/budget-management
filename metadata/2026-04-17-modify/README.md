@@ -12,7 +12,7 @@ The UTxO marked `EC-0002-25-03`
 
 ## Change for Vendor Contract
 
-#### CHANGE_AMOUNT:`3765286`
+#### CHANGE_AMOUNT_LOVELACE:`3765286000000`
 
 #### ADDRESS:`addr1xxyzewehw7dh78ea62mkgdnzmcdlcxqt4u39a7pqc0v0at5g9janwaum0u0nm54hvsmx9hsmlsvqhteztmuzps7cl6hq7d35th`
 
