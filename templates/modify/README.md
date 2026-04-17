@@ -12,13 +12,15 @@ The UTxO marked `insert label`
 
 ## Change for Vendor Contract
 
-#### CHANGE_AMOUNT:`amount-in-ada`
+#### CHANGE_AMOUNT_LOVELACE:`amount-in-lovelace`
 
 #### ADDRESS:`vendor-contract-address`
 
 ## Datum
 
 This section will be for the datum of the smart contract for modifying milestones
+
+## Required Signatures
 
 ## Transaction Metadata
 

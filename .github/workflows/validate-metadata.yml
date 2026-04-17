@@ -61,6 +61,14 @@ jobs:
             --folders "${{ steps.detect-folders.outputs.new_folders }}" \
             --metadata-path metadata
 
+      - name: Run README validation
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          python3 .github/scripts/validate_readme.py \
+            --folders "${{ steps.detect-folders.outputs.new_folders }}" \
+            --metadata-path metadata \
+            --repo-root .
+
       - name: Validation complete
         if: success()
         run: echo "✅ All metadata validation checks passed!"

@@ -30,7 +30,7 @@ def validate_folder_name(folder_name: str) -> tuple[bool, str]:
     Returns:
         Tuple of (is_valid, error_message)
     """
-    allowed_keywords = ['disburse', 'initialise', 'initialize','fund']
+    allowed_keywords = ['disburse', 'initialise', 'initialize', 'fund', 'modify', 'cancel']
     
     # Pattern: YYYY-MM-DD-(text with hyphens)
     pattern = r'^(\d{4})-(\d{2})-(\d{2})-([a-z0-9]+-?)+$'
@@ -272,7 +272,7 @@ def main():
     
     # Validate folder names
     print("1️⃣  Folder Name Validation: [YYYY-MM-DD-keyword-text]")
-    print("   Allowed keywords: disburse, initialise, initialize, fund")
+    print("   Allowed keywords: disburse, initialise, initialize, fund, modify, cancel")
     if args.folders:
         folders_list = [f.strip() for f in args.folders.strip().split('\n') if f.strip()]
         if not validate_folders(args.folders):

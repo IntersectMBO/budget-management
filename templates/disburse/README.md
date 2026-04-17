@@ -20,13 +20,13 @@ We only cover notable outputs, other outputs may be required by the orchestratin
 
 #### DESTINATION:`insert-destination-wallet-addr`
 
-#### AMOUNT_ADA:`amount-in-ada`
+#### AMOUNT_LOVELACE:`amount-in-lovelace`
 
 [insert-description]
 
 ## Change for Treasury Reserve Contract
 
-#### CHANGE_AMOUNT:`amount-in-ada`
+#### CHANGE_AMOUNT_LOVELACE:`amount-in-lovelace`
 
 #### ADDRESS:`treasury-reserve-contract-address`
 
