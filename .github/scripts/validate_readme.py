@@ -246,56 +246,62 @@ def validate_utxo_onchain(
     return len(errors) == 0, errors, value_lovelace, False
 
 
-def validate_disburse_change(
+def validate_change_amount(
     fields: dict[str, str],
     utxo_value_lovelace: int | None,
 ) -> tuple[bool, list[str]]:
     """
-    For disburse: verify CHANGE_AMOUNT_LOVELACE = UTXO value - AMOUNT_LOVELACE.
-    All values are in lovelace.
+    For disburse: verify CHANGE_AMOUNT = UTXO value - AMOUNT_ADA.
+    Both AMOUNT_ADA and CHANGE_AMOUNT are in ada (lovelace / 1_000_000).
 
-    If CHANGE_AMOUNT_LOVELACE is 'N/A', the full UTXO is being disbursed;
-    we verify UTXO value == AMOUNT_LOVELACE.
+    If CHANGE_AMOUNT is 'N/A', that means the full UTXO is being disbursed;
+    we verify UTXO value == AMOUNT_ADA.
 
     Returns (is_valid, errors).
     """
     errors: list[str] = []
 
-    amount_str = fields.get("AMOUNT_LOVELACE", "")
-    change_str = fields.get("CHANGE_AMOUNT_LOVELACE", "")
+    amount_ada_str = fields.get("AMOUNT_ADA", "")
+    change_str = fields.get("CHANGE_AMOUNT", "")
 
-    if not amount_str:
-        errors.append("Missing AMOUNT_LOVELACE field")
+    if not amount_ada_str:
+        errors.append("Missing AMOUNT_ADA field")
         return False, errors
 
+    # Parse AMOUNT_ADA (in ada)
     try:
-        amount_lovelace = int(amount_str)
+        amount_ada = int(amount_ada_str)
     except ValueError:
-        errors.append(f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer")
+        errors.append(f"Invalid AMOUNT_ADA value: '{amount_ada_str}' — must be an integer (ada)")
         return False, errors
 
     if utxo_value_lovelace is None:
         errors.append("Cannot verify change amount: UTXO value unknown")
         return False, errors
 
+    # Convert UTXO value from lovelace to ada
+    utxo_ada = utxo_value_lovelace // 1_000_000
+
     if change_str.upper() == "N/A" or change_str == "":
-        if utxo_value_lovelace != amount_lovelace:
+        # Full UTXO disbursed — value should equal the amount
+        if utxo_ada != amount_ada:
             errors.append(
-                f"CHANGE_AMOUNT_LOVELACE is N/A but UTXO value ({utxo_value_lovelace}) != "
-                f"AMOUNT_LOVELACE ({amount_lovelace}). "
-                f"Expected change of {utxo_value_lovelace - amount_lovelace} lovelace"
+                f"CHANGE_AMOUNT is N/A but UTXO value ({utxo_ada} ada) != "
+                f"AMOUNT_ADA ({amount_ada} ada). "
+                f"Expected change of {utxo_ada - amount_ada} ada"
             )
     else:
+        # Explicit change amount
         try:
-            change_lovelace = int(change_str)
+            change_ada = int(change_str)
         except ValueError:
             errors.append(
-                f"Invalid CHANGE_AMOUNT_LOVELACE value: '{change_str}' — must be an integer or 'N/A'"
+                f"Invalid CHANGE_AMOUNT value: '{change_str}' — must be an integer (ada) or 'N/A'"
             )
             return False, errors
 
-        expected_change = utxo_value_lovelace - amount_lovelace
-        if change_lovelace != expected_change:
+        expected_change = utxo_ada - amount_ada
+        if change_ada != expected_change:
             errors.append(
                 f"CHANGE_AMOUNT_LOVELACE mismatch: got {change_lovelace}, "
                 f"expected {expected_change} "
