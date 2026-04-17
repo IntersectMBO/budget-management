@@ -4,23 +4,23 @@
 
 The UTxO marked 'Cardano Critical Integrations Budget'
 
-#### UTXO:5e228fe50f376e00a17356594465c13c766373ee3d8559dc88fdaa6220fbdab0#0
+#### UTXO:`5e228fe50f376e00a17356594465c13c766373ee3d8559dc88fdaa6220fbdab0#0`
 
 ## The UTxO Metadata
 
 Metadata present in the chosen UTxO
 
-#### LABEL:"Cardano Critical Integrations Budget"
+#### LABEL:`Cardano Critical Integrations Budget`
 
-#### IDENTIFIER:"UTXO-CR0000-00"
+#### IDENTIFIER:`UTXO-CR0000-00`
 
 ## Transaction Outputs
 
 We only cover notable outputs, other outputs may be required by the orchestrating wallet to cover transaction fees.
 
-#### DESTINATION:addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw
+#### DESTINATION:`addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw`
 
-#### AMOUNT_ADA:70000000
+#### AMOUNT_ADA:`70000000`
 
 70,000,000 ada to Intersect’s Custodian Environment: addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw
 
