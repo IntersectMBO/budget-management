@@ -30,6 +30,12 @@ We only cover notable outputs, other outputs may be required by the orchestratin
 
 #### ADDRESS:`treasury-reserve-contract-address`
 
+## Signatures
+
+- Oversight Committee
+- Intersect Leadreship
+- Intersect Admin
+
 ## Transaction Metadata
 
 See [metadata.json](./metadata.json).
