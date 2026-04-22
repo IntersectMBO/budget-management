@@ -1,7 +1,8 @@
 {
-    "@context": {
-        "@language": "en-us"
-    },
+  "@context": [
+    "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-",
+    "contracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+  ],
     "hashAlgorithm": "blake2b-256",
     "txAuthor": "c27...",
     "instance": "1ef...",
