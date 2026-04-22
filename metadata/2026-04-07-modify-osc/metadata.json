@@ -1,76 +1,79 @@
 {
-    "@context": "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-contracts/refs/heads/main/offchain/src/metadata/context.jsonld",
-    "hashAlgorithm": "blake2b-256",
-    "txAuthor": "c27...",
-    "instance": "1ef...",
-    "body": {
-        "event": "modify",
-        "identifier": "EC-0013(6,10,4)-25",
-        "otherIdentifiers": [],
-        "label": [
-            "Open Source Committee - Developer Advocates Program, Committee T",
-            "ravel Budget, Bug Bounty"
-        ],
+  "@context": [
+    "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-",
+    "contracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+  ],
+  "hashAlgorithm": "blake2b-256",
+  "txAuthor": "c27...",
+  "instance": "1ef...",
+  "body": {
+    "event": "modify",
+    "identifier": "EC-0013(6,10,4)-25",
+    "otherIdentifiers": [],
+    "label": [
+      "Open Source Committee - Developer Advocates Program, Committee T",
+      "ravel Budget, Bug Bounty"
+    ],
+    "description": [
+      "The Open Source Committee wishes to adjust Milestones 10.5 and ",
+      "10.6 as there was agreement to sponsor an event which absorbed ",
+      "most of the available budget for this program. Due to a ",
+      "decreased value of ada, the Open Source Committee elected to ",
+      "select an event with high value for Cardano and welcome feedback",
+      " to the implementation of the Paid Open Source Model (POSM)."
+    ],
+    "reason": [
+      "Costs for the sponsored event are due in advance including ",
+      "provisions for merch, pre-booked travel, and accommodations. ",
+      "Sponsorship of OSS NA 2026 Minneapolis concludes the Travel ",
+      "program for OSC in 2026."
+    ],
+    "vendor": {
+      "label": [
+        "addr1q9kpwrdezpmyxn0g87fcdrnp7spqaauyqy3kx6aq5jj3926z8sjcfkfh9jh",
+        "kskg9x72wfg86yt23me9j6dejjgwkycvs3gy7pn"
+      ]
+    },
+    "contract": {
+      "anchorUrl": [
+        "ipfs://bafkreic2cujxwsiesaz6eq2pf6rp5zrrhix2wziqmmg6n2mwmy55zr3a",
+        "2q"
+      ],
+      "anchorDataHash": "ecd7cbc5276f7cbcfe6131b22482a7c7d6ad589f2307e4bc2acd95725a9b563f"
+    },
+    "milestones": [
+      {
+        "identifier": "m-10",
+        "label": "Milestone 11",
         "description": [
-            "The Open Source Committee wishes to adjust Milestones 10.5 and ",
-            "10.6 as there was agreement to sponsor an event which absorbed ",
-            "most of the available budget for this program. Due to a ",
-            "decreased value of ada, the Open Source Committee elected to ",
-            "select an event with high value for Cardano and welcome feedback",
-            " to the implementation of the Paid Open Source Model (POSM)."
+          "10.5- Sponsorship Booked, Confirmed Attendee List, ",
+          "Travel/Lodging Booked"
         ],
-        "reason": [
-            "Costs for the sponsored event are due in advance including ",
-            "provisions for merch, pre-booked travel, and accommodations. ",
-            "Sponsorship of OSS NA 2026 Minneapolis concludes the Travel ",
-            "program for OSC in 2026."
+        "acceptanceCriteria": [
+          "Q2 OSC Event Sponsorship Booked: Confirmed booking of a Gold ",
+          "Level Sponsorship. Published ‘goals’ sheet for booth attendance,",
+          " booth events, co-delivered talk draft (unless approved by LF ",
+          "prior to Milestone Due Date)."
         ],
-        "vendor": {
-            "label": [
-                "addr1q9kpwrdezpmyxn0g87fcdrnp7spqaauyqy3kx6aq5jj3926z8sjcfkfh9jh",
-                "kskg9x72wfg86yt23me9j6dejjgwkycvs3gy7pn"
-            ]
-        },
-        "contract": {
-            "anchorUrl": [
-                "ipfs://bafkreic2cujxwsiesaz6eq2pf6rp5zrrhix2wziqmmg6n2mwmy55zr3a",
-                "2q"
-            ],
-            "anchorDataHash": "ecd7cbc5276f7cbcfe6131b22482a7c7d6ad589f2307e4bc2acd95725a9b563f"
-        },
-        "milestones": [
-            {
-                "identifier": "m-10",
-                "label": "Milestone 11",
-                "description": [
-                    "10.5- Sponsorship Booked, Confirmed Attendee List, ",
-                    "Travel/Lodging Booked"
-                ],
-                "acceptanceCriteria": [
-                    "Q2 OSC Event Sponsorship Booked: Confirmed booking of a Gold ",
-                    "Level Sponsorship. Published ‘goals’ sheet for booth attendance,",
-                    " booth events, co-delivered talk draft (unless approved by LF ",
-                    "prior to Milestone Due Date)."
-                ],
-                "details": [
-                    "Changing milestone payment date from 2026-05-30 to 2026-04-30. ",
-                    "Changing the Milestone Description & Acceptance Criteria"
-                ]
-            },
-            {
-                "identifier": "m-11",
-                "label": "Milestone 12",
-                "description": [
-                    "10.6- OSS NA 2026 benefit report published."
-                ],
-                "acceptanceCriteria": [
-                    "Benefit report demonstrating benefits of OSS NA 2026 event ",
-                    "sponsorship made publicly available."
-                ],
-                "details": [
-                    "Changing the Milestone Description & Acceptance Criteria"
-                ]
-            }
+        "details": [
+          "Changing milestone payment date from 2026-05-30 to 2026-04-30. ",
+          "Changing the Milestone Description & Acceptance Criteria"
         ]
-    }
+      },
+      {
+        "identifier": "m-11",
+        "label": "Milestone 12",
+        "description": [
+          "10.6- OSS NA 2026 benefit report published."
+        ],
+        "acceptanceCriteria": [
+          "Benefit report demonstrating benefits of OSS NA 2026 event ",
+          "sponsorship made publicly available."
+        ],
+        "details": [
+          "Changing the Milestone Description & Acceptance Criteria"
+        ]
+      }
+    ]
+  }
 }
