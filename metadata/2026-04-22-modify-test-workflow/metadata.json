@@ -12,12 +12,12 @@
             "ravel Budget, Bug Bounty"
         ],
         "description": [
-            "The Open Source Committee wishes to adjust Milestones 10.5 and 10.6 as",
-            " there was agreement to sponsor an event which absorbed most of ",
-            "the available budget for this program. Due to a decreased value ",
-            "of ADA, the Open Source Committee elected to select an event ",
-            "with high value for Cardano and welcome feedback to the ",
-            "implementation of the Paid Open Source Model (POSM)."
+            "The Open Source Committee wishes to adjust Milestones 10.5 and ",
+            "10.6 as there was agreement to sponsor an event which absorbed ",
+            "most of the available budget for this program. Due to a ",
+            "decreased value of ADA, the Open Source Committee elected to ",
+            "select an event with high value for Cardano and welcome feedback",
+            " to the implementation of the Paid Open Source Model (POSM)."
         ],
         "reason": [
             "Costs for the sponsored event are due in advance including ",
@@ -43,8 +43,8 @@
                 "identifier": "m-10",
                 "label": "Milestone 11",
                 "description": [
-                    "10.5- Sponsorship Booked, Confirmed Attendee List, Travel/Lodging ",
-                    "Booked"
+                    "10.5- Sponsorship Booked, Confirmed Attendee List, ",
+                    "Travel/Lodging Booked"
                 ],
                 "acceptanceCriteria": [
                     "Q2 OSC Event Sponsorship Booked: Confirmed booking of a Gold ",
