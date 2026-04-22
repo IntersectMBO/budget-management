@@ -19,7 +19,7 @@ The UTxO marked `EC-0013(6,10,4)-25`
 ## Datum
 
 - MS-10 new payment date
-  - 2026-04-30
+  - 2026-04-30 00:00:00
   - 1777507200000
 
 ## Required Signatures
