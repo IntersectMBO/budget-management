@@ -23,14 +23,14 @@
             "anchorUrl": "ipfs://...",
             "anchorDataHash": "..."
         },
-        "milestones": {
-            "001": {
+        "milestones": [
+            {
                 "identifier": "001",
                 "label": "...",
                 "description": "A human readable description",
                 "acceptanceCriteria": "...",
                 "details": {}
             }
-        }
+        ]
     }
 }
