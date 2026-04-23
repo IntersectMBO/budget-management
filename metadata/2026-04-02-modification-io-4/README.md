@@ -2,15 +2,15 @@
 
 ## Transaction Inputs
 
-The UTxO marked `EC-0002-25-04`
+The UTxO marked `UTXO-EC-0002-25-04`
 
-#### UTXO:`33470c9f5b21b52d9f6981a7638beff91718effc48a1ab9bfbea208989223966#0`
+#### UTXO:`908bdea3db367dfee59f790bcd900903131391c9c0e34617b545eaa517480ec2#0`
 
 ## Transaction Outputs
 
 [No ada should be spent from the vendor contract]
 
-## Change for Treasury Reserve Contract
+## Change for Vendor Contract
 
 #### CHANGE_AMOUNT_LOVELACE:`5137599000000`
 
