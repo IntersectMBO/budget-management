@@ -19,10 +19,10 @@ The UTxO marked `UTXO-EC-0002-25-03`
 ## Datum
 
 - M-10 new payment date
-  - 30-05-2026
+  - 30-05-2026 00:00:00
   - 1780099200000
 - M-12 new payment date
-  - 30-07-2026
+  - 30-07-2026 00:00:00
   - 1785369600000
 
 ## Required Signatures

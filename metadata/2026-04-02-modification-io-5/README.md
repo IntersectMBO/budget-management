@@ -4,7 +4,7 @@
 
 The UTxO marked `UTXO-EC-0002-25-05`
 
-#### UTXO:`7a3dd39340b78ae35fb06cd729c3660ae1937fde4fd851d321ab184d22da4f63#0`
+#### UTXO:`b49d27563e6757ff1d61c8c42d6812680bbfbea5c4b8d48d6792f0d24fe76e5f#0`
 
 ## Transaction Outputs
 
@@ -19,10 +19,10 @@ The UTxO marked `UTXO-EC-0002-25-05`
 ## Datum
 
 - M-6 new payment date
-  - 30-07-2026
+  - 30-07-2026 00:00:00
   - 1785369600000
 - M-9 new payment date
-  - 30-07-2026
+  - 30-07-2026 00:00:00
   - 1785369600000
 
 ## Required Signatures
