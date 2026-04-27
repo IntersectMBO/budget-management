@@ -1,0 +1,29 @@
+{
+  "@context": "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-contracts/refs/heads/main/offchain/src/metadata/context.jsonld",
+  "hashAlgorithm": "blake2b-256",
+  "txAuthor": "c27...",
+  "instance": "1ef...",
+  "body": {
+    "event": "disburse",
+    "label": "Withdrawing remaining ada allocated for Tweag proposal",
+    "description": [
+      "570,323 ada will be withdrawn from the Treasury Reserve ",
+      "Contract (TRC)"
+    ],
+    "justification": [
+      "Remaining 570,323 ada will be withdrawn from the Treasury ",
+      "Reserve Contract (TRC) to cover obligations that have been ",
+      "signed under TWEAG’s Proposals for multiple core budget ",
+      "projects for Cardano 2025 SoW (EC-0016-25)."
+    ],
+    "destination": [
+      {
+        "label": "Intersect Custodian Environment",
+        "details": {
+          "anchorUrl": "ipfs://bafkreicye2wdii3pdy2v2cbyzfvnw4ydvaukrnuindr2bms2je6jk6q7sy",
+          "anchorDataHash": "5efcff07e6271756af899a9cc3723268a2705567ad85c1af971ace2c8151dac3"
+        }
+      }
+    ]
+  }
+}
