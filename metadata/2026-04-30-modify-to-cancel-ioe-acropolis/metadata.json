@@ -1,0 +1,71 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "UTXO-EC-0002-25-02",
+        "otherIdentifiers": [],
+        "label": "Input Output Engineering Core Development Proposal (2of6)",
+        "description": [
+            "Milestone Cancellation: We recommend the cancellation of a works",
+            "tream and its associated milestones. The rationale is detailed b",
+            "elow, and outcome of this cancellation is to release funding fro",
+            "m relevant Smart Contract and back to the Treasury."
+        ],
+        "reason": [
+            "IO is requesting the cancellation of milestones MS5.10 through ",
+            "MS5.14 of the Acropolis project. IO has successfully delivered ",
+            "all milestones through March 2026 (MS5.1 through MS5.9), ",
+            "producing a functional Rust-based data node with full transactio",
+            "n validation,Blockfrost-compatible APIs, and production adoption",
+            " by ecosystem partners. Following a strategic assessment aligned",
+            " with Cardano's priorities of increasing TVL, monthly active use",
+            "rs, and transaction volume, IO has determined that further devel",
+            "opment on Acropolis would not be enhancing these priorities, whi",
+            "lst node diversity is continuing to progress with projects like ",
+            "Amaru, Dingo, and others. Acropolis remains fully OpenSource."
+        ],
+        "vendor": {
+            "label": "Input Output Engineering Core Development Proposal (3of6)"
+        },
+        "contract": {
+            "anchorUrl": [
+                "ipfs://bafkreih2xcewoqdxj23ijk5e5viyfqlnk4a2y325vqmgiaadijxbhiqb",
+                "na"
+            ],
+            "anchorDataHash": "cbdd25cc30dc6fb71ef08e51f2e0d02a6e44e9c5649047387008ffea56752c14"
+        },
+        "milestones": [
+            {
+                "identifier": "MS-10",
+                "label": "MS5.10 - ChainSync / BlockFetch server",
+                "details": "Cancellation of this milestone"
+            },
+            {
+                "identifier": "MS-11",
+                "label": "MS5.11 - Relay node",
+                "details": "Cancellation of this milestone"
+            },
+            {
+                "identifier": "MS-12",
+                "label": "MS5.12 - Mempool & block production",
+                "details": "Cancellation of this milestone"
+            },
+            {
+                "identifier": "MS-13",
+                "label": "MS5.13 - Block producing node - testnet",
+                "details": "Cancellation of this milestone"
+            },
+            {
+                "identifier": "MS-14",
+                "label": "MS5.14 - Block producing node - mainnet",
+                "details": "Cancellation of this milestone"
+            }
+        ]
+    }
+}
