@@ -10,11 +10,17 @@ The UTxO marked `UTXO-EC-0002-25-02`
 
 ## Transaction Outputs
 
-[No ada should be spent from the vendor contract]
+Milestones 10 through 14 have been cancelled, each with a budget of 289,714 ada, for a total of 1,448,570 ada. This amount should be returned to the treasury contract, while the remaining balance of 2,356,346 ada should be redirected back to the vendor contract.
 
-## Change for Vendor Contract
+### Treasury reserve contract
 
-#### CHANGE_AMOUNT_LOVELACE:`3804916000000`
+#### DESTINATION:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
+
+#### AMOUNT_LOVELACE:`1448570000000`
+
+### Change for Vendor Contract
+
+#### CHANGE_AMOUNT_LOVELACE:`2356346000000`
 
 #### ADDRESS:`addr1xxyzewehw7dh78ea62mkgdnzmcdlcxqt4u39a7pqc0v0at5g9janwaum0u0nm54hvsmx9hsmlsvqhteztmuzps7cl6hq7d35th`
 
