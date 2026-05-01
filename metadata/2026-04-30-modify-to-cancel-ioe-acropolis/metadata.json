@@ -40,32 +40,47 @@
             ],
             "anchorDataHash": "cbdd25cc30dc6fb71ef08e51f2e0d02a6e44e9c5649047387008ffea56752c14"
         },
-        "milestones": [
-            {
-                "identifier": "MS-10",
-                "label": "MS5.10 - ChainSync / BlockFetch server",
-                "details": "Cancellation of this milestone"
-            },
-            {
-                "identifier": "MS-11",
-                "label": "MS5.11 - Relay node",
-                "details": "Cancellation of this milestone"
-            },
-            {
-                "identifier": "MS-12",
-                "label": "MS5.12 - Mempool & block production",
-                "details": "Cancellation of this milestone"
-            },
-            {
-                "identifier": "MS-13",
-                "label": "MS5.13 - Block producing node - testnet",
-                "details": "Cancellation of this milestone"
-            },
-            {
-                "identifier": "MS-14",
-                "label": "MS5.14 - Block producing node - mainnet",
-                "details": "Cancellation of this milestone"
-            }
-        ]
+        "milestones":[
+        {
+          "identifier": "MS-7",
+          "description": [
+            "MS5.7 - Acropolis: Transaction validation - phase 2\r Deliverable",
+            "s:  Transaction Phase 2 validation module Test cases and reports"
+          ]
+        },
+        {
+          "identifier": "MS-8",
+          "description": [
+            "MS5.8 - Acropolis: Multi-peer networking\r Deliverables:  P2P net",
+            "work module Chain selection / consensus module Test network infr",
+            "astructure and reports"
+          ]
+        },
+        {
+          "identifier": "MS-9",
+          "description": [
+            "MS5.9 - Acropolis: Chain storage\r Deliverables:  Block store mod",
+            "ule Test reports"
+          ]
+        },
+        {
+          "identifier": "MS-18",
+          "description": [
+            "MS6.4 - Hydra Development: Early bitcoin lightning interoperabil",
+            "ity\r Deliverables:  Backend that routes payments from hydra to l",
+            "ightning node; Browser application that scans a lightning invoic",
+            "e and converts it to a payment in a hydra head"
+          ]
+        },
+        {
+          "identifier": "MS-19",
+          "description": [
+            "MS6.5 - Hydra Development: Resolve known problems, audit, UX imp",
+            "rovements, marketing initiatives\r Deliverables:  Partial fanout;",
+            " no more known issues; no new issues unsolved by audit; updated ",
+            "website and docs, workshops at conferences"
+          ]
+        }
+      ]
     }
 }
