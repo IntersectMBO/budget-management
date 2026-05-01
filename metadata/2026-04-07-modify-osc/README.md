@@ -31,7 +31,7 @@ The UTxO marked `EC-0013(6,10,4)-25`
   - Leadership 2 keyhash: 91f5b1d436080c1beca93fbbb96596312d8f615b0ad9e94470af2224
 - Intersect Admin
   - Admin 2 keyhash : a664de561ccd2ca9a07c060d4dd7cea4dc68ba89d4bf04b21ff0726f
-  - Admin 3 keyhash : c236d8dc9441605238a5fe9cc7e6c1a79903289a4249c33122bf9627
+  - Admin 1 keyhash : 1be0008bf2994524c0eaf0efdae4431e4a61ef7d974804fa794110b7
 - The vendor
   - Vendor payment keyhash : 6c170db91076434de83f93868e61f4020ef7840123636ba0a4a512ab
   - Vendor wallet address : addr1q9kpwrdezpmyxn0g87fcdrnp7spqaauyqy3kx6aq5jj3926z8sjcfkfh9jhkskg9x72wfg86yt23me9j6dejjgwkycvs3gy7pn
