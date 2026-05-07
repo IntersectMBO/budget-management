@@ -1,6 +1,7 @@
 # 2026-04-07 Modify Input Output Engineering Core Development Proposal (5of6)
 
 ## Transaction ID : `7ffc68635d0a1f827da895fdee1cf30bc96964ffa74dc443a37d3349d995b81a`
+
 ## Transaction Inputs
 
 The UTxO marked `UTXO-EC-0002-25-05`
@@ -9,11 +10,17 @@ The UTxO marked `UTXO-EC-0002-25-05`
 
 ## Transaction Outputs
 
-[No ada should be spent from the vendor contract]
+Milestones 14 through 18 have been cancelled, each with a budget of 540,800 ada for a total of 2,704,000 ada. This amount should be returned to the treasury contract, while the remaining balance of 6,292,016 ada should be redirected back to the vendor contract.
 
-## Change for Vendor Contract
+### Treasury reserve contract
 
-#### CHANGE_AMOUNT:`8996000000000`
+#### DESTINATION:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
+
+#### AMOUNT_LOVELACE:`2704000000000`
+
+### Change for Vendor Contract
+
+#### CHANGE_AMOUNT:`6292016000000`
 
 #### ADDRESS:`addr1xxyzewehw7dh78ea62mkgdnzmcdlcxqt4u39a7pqc0v0at5g9janwaum0u0nm54hvsmx9hsmlsvqhteztmuzps7cl6hq7d35th`
 
@@ -25,6 +32,7 @@ The UTxO marked `UTXO-EC-0002-25-05`
 - M-9 new payment date
   - 2026-07-30 00:00:00
   - 1785369600000
+- Removal of milestones with identifiers : M-14, M-15, M-16, M-17, M-18
 
 ## Required Signatures
 

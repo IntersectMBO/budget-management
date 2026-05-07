@@ -12,27 +12,38 @@
         "otherIdentifiers": [],
         "label": "Input Output Engineering Core Development Proposal (5of6)",
         "description": [
-            "The proposed adjustments specify new completion dates for each ",
-            "of the milestones MS14.6 & MS14.9 of Plutus Core Project. These",
-            " revisions are a direct and necessary consequence of unforeseen",
-            " technical and external constraints."
+            "Plutus Date Changes: The proposed adjustments specify new comple",
+            "tion dates for each of the milestones MS14.6 & MS14.9 of Plutus ",
+            "Core Project. These revisions are a direct and necessary consequ",
+            "ence of unforeseen technical and external constraints.Tiered Pri",
+            "cing Milestone Cancellations: IOE recommend the cancellation of ",
+            "this workstream and its associated milestones. The rationale is ",
+            "detailed below, and outcome of this cancellation is to release f",
+            "unding from relevant Smart Contract and back to the Treasury."
         ],
         "reason": [
-            "This Change Request Form is being submitted to align the ",
-            "referenced milestones and completion dates with the revised ",
-            "technical realities identified during the current phase of the ",
-            "project. The need for this revision is based on new and ",
-            "previously undiscovered technical data/requirements identified ",
-            "during the execution of the Scope of Work (“SOW”).\nThe primary ",
-            "drivers for these changes across all the listed initiatives are:",
-            "\n- Development complexities identified: Identification of ",
-            "previously unknown or undiscoverable technical requirements ",
-            "necessitating additional development work to meet deliverables ",
-            "and acceptance criteria.\n- Infrastructure constraint and/or ",
-            "dependency delay specifically new Ledger era."
+            "This Change Request Form is being submitted to align the referen",
+            "ced milestones and completion dates with the revised technical r",
+            "ealities identified during the current phase of the project. The",
+            " need for this revision is based on new and previously undiscove",
+            "red technical data/requirements identified during the execution ",
+            "of the Scope of Work (“SOW”).\nPrimary drivers for these changes",
+            " across all the listed initiatives are:\n-Development complexiti",
+            "es identified: Identification of previously unknown or undiscove",
+            "rable technical requirements necessitating additional developmen",
+            "t work to meet deliverables and acceptance criteria.\n-Infrastru",
+            "cture constraint and/or dependency delay specifically new Ledger",
+            " era.\nFor the Tiered Pricing Mechanism (MS15.1 - MS15.5) workst",
+            "ream specifically, IOE have identified that the research this pr",
+            "oposal implementation was based upon does not fully reflect futu",
+            "re releases, specifically in regards to the Leios implementation",
+            ". As a result, do not believe that continuing this work would de",
+            "liver the value anticipated to the ecosystem and propose to canc",
+            "el milestones associated, releasing those funds back to the Trea",
+            "sury."
         ],
         "vendor": {
-            "label": "Input Output Engineering Core Development Proposal (5of6)"
+            "label": "Input Output Engineering"
         },
         "contract": {
             "anchorUrl": [
@@ -43,11 +54,17 @@
         },
         "milestones": [
             {
-                "identifier": "MS-6",
-                "label": "CIP-0112: Observe script type",
+                "identifier": "MS-4",
                 "description": [
-                    "MS14.6 - Plutus Core: CIP-0112: Observe script type ",
-                    "Deliverables: A new script purpose - Observe, for Plutus V4"
+                    "MS14.4 - Plutus Core: CIP-0153: builtin value\r Deliverables: The",
+                    " built-in value type, and primitives for operating on values"
+                ]
+            },
+            {
+                "identifier": "MS-6",
+                "description": [
+                    "MS14.6 - Plutus Core: CIP-0112: Observe script type\r Deliverable",
+                    "s: A new script purpose - Observe, for Plutus V4"
                 ],
                 "details": [
                     "Changing milestone payment date from 2026-01-30 to 2026-07-30"
@@ -55,13 +72,74 @@
             },
             {
                 "identifier": "MS-9",
-                "label": "Introduce Plutus V4 as a new Plutus ledger language version",
                 "description": [
                     "MS14.9 - Plutus Core: Introduce Plutus V4 as a new Plutus ledger",
-                    " language version Deliverables: Plutus V4"
+                    " language version\r Deliverables: Plutus V4"
                 ],
                 "details": [
                     "Changing milestone payment date from 2026-04-30 to 2026-07-30"
+                ]
+            },
+            {
+                "identifier": "MS-10",
+                "description": [
+                    "MS14.10 - Plutus Core: Plinth (Plutus Tx) compiler and library e",
+                    "nhancement \r Deliverables: (1) support inlining for recursive bi",
+                    "ndings; (2) implement new compiler optimizations targeting new l",
+                    "anguage extensions (3) make the new (data-based) API more compre",
+                    "hensive and efficient"
+                ]
+            },
+            {
+                "identifier": "MS-11",
+                "description": [
+                    "MS14.11 - Plutus Core: Plinth (Plutus Tx) developer tooling enha",
+                    "ncement\r Deliverables: (1) Remove the requirement of using Nix f",
+                    "or setup (2) Support at least two major GHC versions (3) Make th",
+                    "e UPLC executable easier to use"
+                ]
+            },
+            {
+                "identifier": "MS-12",
+                "description": [
+                    "MS14.12 - Plutus Core: Plutus language performance benchmark \r D",
+                    "eliverables: Develop a benchmark comparing the performance of va",
+                    "rious surface languages targeting UPLC, such as Plinth, Aiken, p",
+                    "lu-ts and Plutarch."
+                ]
+            },
+            {
+                "identifier": "MS-13",
+                "description": [
+                    "MS14.13 - Plutus Core: Plinth (Plutus Tx) compiler certifier: in",
+                    "itial release\r Deliverables: Initial release of the certifier fo",
+                    "cusing on certifying UPLC optimizations"
+                ]
+            },
+            {
+                "identifier": "MS-19",
+                "description": [
+                    "MS16.1 - Transaction Monitoring System: State-of-the-art report\r",
+                    " Deliverables: Report on fraud and anomaly detection. Specificat",
+                    "ion of the Backend analysis"
+                ]
+            },
+            {
+                "identifier": "MS-20",
+                "description": [
+                    "MS16.2 - Transaction Monitoring System: Alpha version of the bac",
+                    "kend\r Deliverables: Release in the open source repository. Live ",
+                    "version on a selection of Dapps or wallets on a testnet with a r",
+                    "ough UI"
+                ]
+            },
+            {
+                "identifier": "MS-21",
+                "description": [
+                    "MS16.3 - Transaction Monitoring System: Frontend for data visual",
+                    "ization and alert mechanism\r Deliverables: Code available in the",
+                    " open source repository. Website with the new Front end visualiz",
+                    "ation. Roadmap for future integration"
                 ]
             }
         ]
