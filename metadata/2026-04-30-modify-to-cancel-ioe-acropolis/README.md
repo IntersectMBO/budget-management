@@ -32,7 +32,7 @@ Removal of milestones with identifiers : M-10, M-11, M-12, M-13, M-14
 
 - Oversight Committee
   - Sundae Labs keyhash : 1880102b04725318eb7a6f9f481815c82473c2f50cfe9932c85a3bf8
-  - Cardano Foundation keyhash : ac3de68e8e1f9af3e00b299e7858bc44e126b33e130d06223d799d5d
+  - DQuadrant keyhash : 679ad28e567eb42ddb30a5cf6b5f066b2defbce393f19968d711f658
 - Intersect Leadership
   - Leadership 2 keyhash: 91f5b1d436080c1beca93fbbb96596312d8f615b0ad9e94470af2224
 - Intersect Admin
