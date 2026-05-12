@@ -1,0 +1,86 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "UTXO-EC-0002-25-02",
+        "otherIdentifiers": [],
+        "label": "Input Output Engineering Core Development Proposal (2of6)",
+        "description": [
+            "Milestone Cancellation: We recommend the cancellation of a works",
+            "tream and its associated milestones. The rationale is detailed b",
+            "elow, and outcome of this cancellation is to release funding fro",
+            "m relevant Smart Contract and back to the Treasury."
+        ],
+        "reason": [
+            "IO is requesting the cancellation of milestones MS5.10 through ",
+            "MS5.14 of the Acropolis project. IO has successfully delivered ",
+            "all milestones through March 2026 (MS5.1 through MS5.9), ",
+            "producing a functional Rust-based data node with full transactio",
+            "n validation,Blockfrost-compatible APIs, and production adoption",
+            " by ecosystem partners. Following a strategic assessment aligned",
+            " with Cardano's priorities of increasing TVL, monthly active use",
+            "rs, and transaction volume, IO has determined that further devel",
+            "opment on Acropolis would not be enhancing these priorities, whi",
+            "lst node diversity is continuing to progress with projects like ",
+            "Amaru, Dingo, and others. Acropolis remains fully OpenSource."
+        ],
+        "vendor": {
+            "label": "Input Output Engineering"
+        },
+        "contract": {
+            "anchorUrl": [
+                "ipfs://bafkreiaa5jv3zyrsjop3yvczaedcnzh7bor7g4borqk6fiwr2n4tagvq",
+                "ni"
+            ],
+            "anchorDataHash": "a82decb3e7a884c4484436d3a703f959a7602e841c63cd3030d30005a1fe1688"
+        },
+        "milestones":[
+        {
+          "identifier": "MS-7",
+          "description": [
+            "MS5.7 - Acropolis: Transaction validation - phase 2\r Deliverable",
+            "s:  Transaction Phase 2 validation module Test cases and reports"
+          ]
+        },
+        {
+          "identifier": "MS-8",
+          "description": [
+            "MS5.8 - Acropolis: Multi-peer networking\r Deliverables:  P2P net",
+            "work module Chain selection / consensus module Test network infr",
+            "astructure and reports"
+          ]
+        },
+        {
+          "identifier": "MS-9",
+          "description": [
+            "MS5.9 - Acropolis: Chain storage\r Deliverables:  Block store mod",
+            "ule Test reports"
+          ]
+        },
+        {
+          "identifier": "MS-18",
+          "description": [
+            "MS6.4 - Hydra Development: Early bitcoin lightning interoperabil",
+            "ity\r Deliverables:  Backend that routes payments from hydra to l",
+            "ightning node; Browser application that scans a lightning invoic",
+            "e and converts it to a payment in a hydra head"
+          ]
+        },
+        {
+          "identifier": "MS-19",
+          "description": [
+            "MS6.5 - Hydra Development: Resolve known problems, audit, UX imp",
+            "rovements, marketing initiatives\r Deliverables:  Partial fanout;",
+            " no more known issues; no new issues unsolved by audit; updated ",
+            "website and docs, workshops at conferences"
+          ]
+        }
+      ]
+    }
+}
