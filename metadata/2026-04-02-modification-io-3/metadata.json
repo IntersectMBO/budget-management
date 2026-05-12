@@ -1,0 +1,70 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "UTXO-EC-0002-25-03",
+        "otherIdentifiers": [],
+        "label": "Input Output Engineering Core Development Proposal (3of6)",
+        "description": [
+            "The proposed adjustments specify new completion dates for each ",
+            "of the milestones 8.5 & 8.7 of Mithril ZK Proofs Project. These",
+            " revisions are a direct and necessary consequence of unforeseen",
+            " technical and external constraints."
+        ],
+        "reason": [
+            "This Change Request Form is being submitted to align the ",
+            "referenced milestones and completion dates with the revised ",
+            "technical realities identified during the current phase of the ",
+            "project. The need for this revision is based on new and ",
+            "previously undiscovered technical data/requirements identified ",
+            "during the execution of the Scope of Work (“SOW”).\nThe primary ",
+            "drivers for these changes across all the listed initiatives are:",
+            "\n- Development complexities identified: Identification of ",
+            "previously unknown or undiscoverable technical requirements ",
+            "necessitating additional development work to meet deliverables ",
+            "and acceptance criteria.\n- Infrastructure constraint and/or ",
+            "dependency delay specifically new Ledger era."
+        ],
+        "vendor": {
+            "label": "Input Output Engineering Core Development Proposal (3of6)"
+        },
+        "contract": {
+            "anchorUrl": [
+                "ipfs://bafkreih2xcewoqdxj23ijk5e5viyfqlnk4a2y325vqmgiaadijxbhiqb",
+                "na"
+            ],
+            "anchorDataHash": "cbdd25cc30dc6fb71ef08e51f2e0d02a6e44e9c5649047387008ffea56752c14"
+        },
+        "milestones": [
+            {
+                "identifier": "MS-10",
+                "label": "Mithril ZK proofs - Prototype",
+                "description": [
+                    "MS8.5 - Mithril: Mithril ZK proofs - Prototype Deliverables: ZK",
+                    "P-enhanced Mithril prototype, prototype testnet reports."
+                ],
+                "details": [
+                    "Changing milestone payment date from 2026-01-30 to 2026-05-30"
+                ]
+            },
+            {
+                "identifier": "MS-12",
+                "label": "Mithril ZK proofs - Mainnet",
+                "description": [
+                    "MS8.7 - Mithril: Mithril ZK proofs - Mainnet Deliverables: ",
+                    "ZKP-enhanced Mithril release, mainnet rollout report, and ",
+                    "updated documentation."
+                ],
+                "details": [
+                    "Changing milestone payment date from 2026-04-30 to 2026-07-30"
+                ]
+            }
+        ]
+    }
+}
