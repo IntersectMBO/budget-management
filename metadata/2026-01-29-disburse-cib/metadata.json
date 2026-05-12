@@ -1,0 +1,30 @@
+{
+  "@context": "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-contracts/refs/heads/main/offchain/src/metadata/context.jsonld",
+  "hashAlgorithm": "blake2b-256",
+  "txAuthor": "....",
+  "instance": "....",
+  "body": {
+    "event": "disburse",
+    "label": "Withdrawing 15% of the Critical Integrations Budget",
+    "description": [
+      "Withdrawing 15% of the Critical Integrations Budget",
+      "for initial contractual commitments"
+    ],
+    "justification": [
+      "Intersect is requesting to withdraw 10,500,000 ada ",
+      "(15% of 70,000,000 ada) from the ",
+      "Treasury Reserve Contract (TRC) to cover ",
+      "the two obligations that have been signed ",   
+      "under the Cardano Critical Integrations Budget."
+    ],
+    "destination": [
+      {
+        "label": "Intersect’s Custodian Environment",
+        "details": {
+          "anchorUrl": "ipfs://bafkreiejcf6uxsztun4qiz6gqykwf73cx56lssr55phvvzmy5t2mmw276q",
+          "anchorDataHash": "143e018bc9dbe5aaa3dcdef3401bd84b61c14beceb523490925b87f1b46f203b"
+        }
+      }
+    ]
+  }
+}
