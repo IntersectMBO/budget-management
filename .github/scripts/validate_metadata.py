@@ -84,14 +84,33 @@ def validate_folders(folders_str: str) -> bool:
     return all_valid
 
 
+def _collect_string_fields(obj, path: str = "") -> list[tuple[str, str]]:
+    """
+    Recursively collect all string values from a JSON object.
+
+    Returns a list of (field_path, string_value) tuples.
+    """
+    results = []
+    if isinstance(obj, str):
+        results.append((path, obj))
+    elif isinstance(obj, list):
+        for idx, item in enumerate(obj):
+            results.extend(_collect_string_fields(item, f"{path}[{idx}]"))
+    elif isinstance(obj, dict):
+        for key, value in obj.items():
+            child_path = f"{path}.{key}" if path else key
+            results.extend(_collect_string_fields(value, child_path))
+    return results
+
+
 def validate_metadata_json(metadata_path: str, max_line_length: int = 64) -> tuple[bool, list[str]]:
     """
     Validate metadata.json files - checks both character limits and spelling in one pass.
     
     Checks:
     1. Valid JSON structure
-    2. Fields in body (event, label, justification, comment, description) have lines <= max_line_length
-    3. Spelling check on same fields using cspell
+    2. All string fields have length <= max_line_length
+    3. Spelling check on all string fields using cspell
     
     Args:
         metadata_path: Path to metadata.json file
@@ -115,56 +134,22 @@ def validate_metadata_json(metadata_path: str, max_line_length: int = 64) -> tup
     except Exception as e:
         return False, [f"Error reading {metadata_path}: {str(e)}"]
     
-    # Fields to check for character limits and spelling
-    fields_to_check = ['event', 'label', 'justification', 'comment', 'description']
-    
-    # Get body - handle different JSON structures
-    body = None
-    if 'body' in data:
-        body = data['body']
-    elif isinstance(data, dict):
-        # Check if there's a numbered key (like "1694")
-        for key in data:
-            if isinstance(data[key], dict) and 'body' in data[key]:
-                body = data[key]['body']
-                break
-    
-    if body:
-        for field in fields_to_check:
-            if field in body:
-                field_value = body[field]
-                
-                # Handle list of strings
-                if isinstance(field_value, list):
-                    for idx, line in enumerate(field_value):
-                        if isinstance(line, str):
-                            # Check character limit
-                            if len(line) > max_line_length:
-                                errors.append(
-                                    f"Field '{field}' line {idx + 1}: Length {len(line)} chars exceeds {max_line_length} - '{line[:50]}...'"
-                                )
-                            
-                            # Check spelling using cspell
-                            spelling_errs = _check_spelling(line)
-                            if spelling_errs:
-                                errors.append(
-                                    f"Field '{field}' line {idx + 1}: Spelling issues - {', '.join(spelling_errs)}"
-                                )
-                
-                # Handle single string
-                elif isinstance(field_value, str):
-                    # Check character limit
-                    if len(field_value) > max_line_length:
-                        errors.append(
-                            f"Field '{field}': Length {len(field_value)} chars exceeds {max_line_length} - '{field_value[:50]}...'"
-                        )
-                    
-                    # Check spelling
-                    spelling_errs = _check_spelling(field_value)
-                    if spelling_errs:
-                        errors.append(
-                            f"Field '{field}': Spelling issues - {', '.join(spelling_errs)}"
-                        )
+    # Recursively collect all string fields from the entire document
+    all_string_fields = _collect_string_fields(data)
+
+    for field_path, value in all_string_fields:
+        # Check character limit
+        if len(value) > max_line_length:
+            errors.append(
+                f"Field '{field_path}': Length {len(value)} chars exceeds {max_line_length} - '{value[:50]}...'"
+            )
+
+        # Check spelling using cspell
+        spelling_errs = _check_spelling(value)
+        if spelling_errs:
+            errors.append(
+                f"Field '{field_path}': Spelling issues - {', '.join(spelling_errs)}"
+            )
     
     return len(errors) == 0, errors
 

@@ -14,11 +14,7 @@
         "description": "long-form markdown annotated description",
         "reason": "long-form reason for the modification",
         "vendor": {
-            "label": "Sundae Labs",
-            "details": {
-                "anchorUrl": "ipfs://...",
-                "anchorDataHash": "..."
-            }
+            "label": "Sundae Labs"
         },
         "contract": {
             "anchorUrl": "ipfs://...",

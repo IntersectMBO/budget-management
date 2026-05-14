@@ -42,7 +42,8 @@ KEYWORD_TYPE_MAP = {
     "initialise": "disburse",
     "initialize": "disburse",
     "modify": "modify",
-    "cancel": "modify",
+    "modification": "modify",
+    "cancel": "cancel",
 }
 
 # Expected address per transaction type

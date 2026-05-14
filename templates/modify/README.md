@@ -1,4 +1,6 @@
-# 2026-XX-XX Modify [INSTERT-TITLE]
+# YYYY-MM-DD Modify [INSERT-TITLE]
+
+## Transaction ID : ``
 
 ## Transaction Inputs
 
@@ -8,9 +10,15 @@ The UTxO marked `insert label`
 
 ## Transaction Outputs
 
-[No ada should be spent from the vendor contract]
+[Description of outputs.]
 
-## Change for Vendor Contract
+### Treasury reserve contract
+
+#### DESTINATION:`trc-address`
+
+#### AMOUNT_LOVELACE:`amount-in-lovelace`
+
+### Change for Vendor Contract
 
 #### CHANGE_AMOUNT_LOVELACE:`amount-in-lovelace`
 
@@ -18,9 +26,21 @@ The UTxO marked `insert label`
 
 ## Datum
 
-This section will be for the datum of the smart contract for modifying milestones
+[Describe changes to milestones, payment dates, etc. reflected on the datum of the smart contract.]
 
 ## Required Signatures
+
+- Oversight Committee
+  - [org] keyhash : [keyhash]
+  - [org] keyhash : [keyhash]
+- Intersect Leadership
+  - Leadership [n] keyhash: [keyhash]
+- Intersect Admin
+  - Admin [n] keyhash : [keyhash]
+  - Admin [n] keyhash : [keyhash]
+- The vendor
+  - Vendor payment keyhash : [keyhash]
+  - Vendor wallet address : [address]
 
 ## Transaction Metadata
 
