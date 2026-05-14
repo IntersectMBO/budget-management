@@ -12,7 +12,13 @@
         "vendor": {
             "label": "IOG"
         },
-        "reason": [""],
+        "reason": [
+            "With Catalyst Administrator transferring from IOG to the Cardano",
+            " Foundation, the Hermes work under the Catalyst 2025 Proposal by",
+            " Input Output: Advancing Decentralised Community Innovation Fund",
+            "ing & Infrastructure SoW will no longer continue and outstanding",
+            " milestones should be cancelled."
+        ],
         "contract": {
             "anchorUrl": [
                 "ipfs:/bafkreiga4zoxqkw3hasrdzzi3k4u6k5uf2dd5n2ldo3ydbs6wz7bbtyq",
