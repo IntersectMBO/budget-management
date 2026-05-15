@@ -1,6 +1,5 @@
 # 2026-04-07 Modify Open Source Committee Travel Budget
 
-## Transaction ID : ``
 ## Transaction Inputs
 
 The UTxO marked `EC-0013(6,10,4)-25`
