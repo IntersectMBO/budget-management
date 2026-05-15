@@ -3,12 +3,13 @@
 README validation script for Cardano budget management repository.
 
 Validates README.md files in metadata folders against their expected template
-(disburse or modify) and performs on-chain UTXO checks via the Koios API.
+(disburse, modify, or modify-cancel) and performs on-chain UTXO checks.
 
 Checks performed:
 1. Heading structure matches the template in strict order
-2. UTXO exists on-chain and belongs to the expected address (not spent)
-3. Change amount is correct (disburse only): UTXO value - AMOUNT_ADA
+2. UTXO exists on-chain, belongs to the expected address, and is not spent
+3. Change amount is correct (varies by type)
+4. Required keyhashes satisfy the intersect.ak quorum rules
 """
 
 from __future__ import annotations
@@ -43,13 +44,14 @@ KEYWORD_TYPE_MAP = {
     "initialize": "disburse",
     "modify": "modify",
     "modification": "modify",
-    "cancel": "cancel",
+    "modify-cancel": "modify-cancel",
 }
 
 # Expected address per transaction type
 TYPE_ADDRESS_MAP = {
     "disburse": TREASURY_ADDRESS,
     "modify": VENDOR_ADDRESS,
+    "modify-cancel": VENDOR_ADDRESS,
 }
 
 
@@ -71,8 +73,9 @@ def extract_headings(text: str) -> list[str]:
         if m:
             level = m.group(1)
             content = m.group(2).strip()
-            if level == "####":
-                # Keep only the tag before the colon (plus the colon)
+            if level in ("##", "####"):
+                # Keep only the tag before the colon (plus the colon);
+                # everything after is user-supplied data (tx hash, amounts…)
                 colon_idx = content.find(":")
                 if colon_idx != -1:
                     content = content[:colon_idx + 1]
@@ -116,11 +119,14 @@ def query_utxo(utxo_ref: str) -> dict | None:
         dict with UTXO info, or None if not found / API error.
     """
     url = f"{KOIOS_API_BASE}/utxo_info"
-    payload = json.dumps({"_utxo_refs": [utxo_ref]}).encode()
+    payload = json.dumps({"_utxo_refs": [utxo_ref], "_extended": False}).encode()
     req = urllib.request.Request(
         url,
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "accept": "application/json",
+            "content-type": "application/json",
+        },
         method="POST",
     )
     try:
@@ -293,6 +299,54 @@ def validate_disburse_change(
     return len(errors) == 0, errors
 
 
+def validate_modify_cancel_change(
+    fields: dict[str, str],
+    utxo_value_lovelace: int | None,
+) -> tuple[bool, list[str]]:
+    """
+    For modify-cancel: verify AMOUNT_LOVELACE + CHANGE_AMOUNT_LOVELACE == UTXO value.
+    AMOUNT_LOVELACE is returned to the treasury reserve contract;
+    CHANGE_AMOUNT_LOVELACE stays in the vendor contract.
+
+    Returns (is_valid, errors).
+    """
+    errors: list[str] = []
+
+    amount_str = fields.get("AMOUNT_LOVELACE", "")
+    change_str = fields.get("CHANGE_AMOUNT_LOVELACE", "")
+
+    if not amount_str:
+        errors.append("Missing AMOUNT_LOVELACE field")
+    if not change_str:
+        errors.append("Missing CHANGE_AMOUNT_LOVELACE field")
+    if errors:
+        return False, errors
+
+    try:
+        amount_lovelace = int(amount_str)
+    except ValueError:
+        return False, [f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer"]
+
+    try:
+        change_lovelace = int(change_str)
+    except ValueError:
+        return False, [f"Invalid CHANGE_AMOUNT_LOVELACE value: '{change_str}' — must be an integer"]
+
+    if utxo_value_lovelace is None:
+        errors.append("Cannot verify amounts: UTXO value unknown")
+        return False, errors
+
+    actual_total = amount_lovelace + change_lovelace
+    if actual_total != utxo_value_lovelace:
+        errors.append(
+            f"Amount mismatch: AMOUNT_LOVELACE ({amount_lovelace}) + "
+            f"CHANGE_AMOUNT_LOVELACE ({change_lovelace}) = {actual_total}, "
+            f"expected {utxo_value_lovelace} (UTXO value)"
+        )
+
+    return len(errors) == 0, errors
+
+
 def validate_modify_change(
     fields: dict[str, str],
     utxo_value_lovelace: int | None,
@@ -334,16 +388,140 @@ def validate_modify_change(
     return len(errors) == 0, errors
 
 
+# --- Keyhash validation ---
+
+def extract_intersect_keyhashes(readme_text: str) -> list[str]:
+    """
+    Extract keyhashes from the Required Signatures section of a README,
+    excluding the vendor sub-section (vendor keys are contract-specific
+    and not present in intersect.ak).
+
+    Returns a list of lowercase 56-char hex keyhashes.
+    """
+    # Isolate the Required Signatures section
+    sig_section = ""
+    in_section = False
+    for line in readme_text.splitlines():
+        if re.match(r'^##\s+Required Signatures', line.strip()):
+            in_section = True
+            continue
+        if re.match(r'^##\s+', line.strip()) and in_section:
+            break
+        if in_section:
+            sig_section += line + "\n"
+
+    # Drop everything from "- The vendor" onwards
+    vendor_match = re.search(r'^\s*-\s+The vendor', sig_section, re.MULTILINE)
+    if vendor_match:
+        sig_section = sig_section[: vendor_match.start()]
+
+    return [
+        kh.lower()
+        for kh in re.findall(r'keyhash\s*:\s*([0-9a-fA-F]{56})', sig_section, re.IGNORECASE)
+    ]
+
+
+def load_keyhash_config(repo_root: Path) -> dict:
+    """
+    Load the keyhash registry and quorum rules from
+    .github/scripts/keyhashes.json relative to the repo root.
+    """
+    config_path = repo_root / ".github" / "scripts" / "keyhashes.json"
+    if not config_path.exists():
+        raise FileNotFoundError(f"Keyhash config not found: {config_path}")
+    with open(config_path) as f:
+        return json.load(f)
+
+
+def validate_keyhashes(
+    readme_text: str,
+    repo_root: Path,
+    rule_key: str,
+) -> tuple[bool, list[str]]:
+    """
+    Validate Required Signatures keyhashes against the quorum rules defined
+    in keyhashes.json for the given rule_key.
+
+    Supported rule keys (expand quorum_rules in keyhashes.json to add more):
+      - "modify"  — used for modify and modify-cancel transaction types
+      - "cancel"  — for full cancellation (when rules are defined)
+      - "disburse" — for disbursement transactions
+
+    Each rule specifies a label, a list of entity names, and the minimum
+    number of distinct entities that must be present.
+
+    Returns (is_valid, list of error messages).
+    """
+    errors: list[str] = []
+
+    try:
+        config = load_keyhash_config(repo_root)
+    except FileNotFoundError as e:
+        return False, [str(e)]
+
+    entities: dict = config["entities"]
+    rules: list = config["quorum_rules"].get(rule_key, [])
+
+    # Build reverse lookup: keyhash (lowercase) -> entity name
+    kh_to_entity: dict[str, str] = {
+        kh.lower(): name
+        for name, entity in entities.items()
+        for kh in entity["keyhashes"]
+    }
+
+    keyhashes = extract_intersect_keyhashes(readme_text)
+    if not keyhashes:
+        return False, ["No Intersect keyhashes found in Required Signatures section"]
+
+    # Map each keyhash to its entity; flag anything unrecognised
+    signed_entities: set[str] = set()
+    unknown: list[str] = []
+    for kh in keyhashes:
+        entity = kh_to_entity.get(kh)
+        if entity:
+            signed_entities.add(entity)
+        else:
+            unknown.append(kh)
+
+    if unknown:
+        errors.append(f"Unrecognised keyhash(es) not in keyhashes.json: {unknown}")
+
+    # Apply each quorum rule from the config
+    for rule in rules:
+        label    = rule["label"]
+        group    = set(rule["entities"])
+        required = rule["required"]
+        signed   = signed_entities & group
+        if len(signed) < required:
+            errors.append(
+                f"Insufficient {label} signatures: {len(signed)} recognised, "
+                f"need at least {required} of ({', '.join(rule['entities'])})"
+            )
+
+    return len(errors) == 0, errors
+
+
 # --- Main validation orchestrator ---
 
 def detect_type_from_folder(folder_name: str) -> str | None:
     """
-    Detect the transaction type (disburse/modify) from the folder keyword.
-    Folder format: YYYY-MM-DD-keyword-text
+    Detect the transaction type from the folder keyword.
+    Folder format: YYYY-MM-DD-keyword[-keyword2]-text
+
+    Checks for compound keywords first (e.g. 'modify-cancel'),
+    including the legacy 'modify-to-cancel' naming.
     """
     parts = folder_name.split("-")
     if len(parts) < 4:
         return None
+    # Check compound keyword (parts[3]-parts[4])
+    if len(parts) > 4:
+        compound = f"{parts[3].lower()}-{parts[4].lower()}"
+        if compound in KEYWORD_TYPE_MAP:
+            return KEYWORD_TYPE_MAP[compound]
+        # Legacy: modify-to-cancel → modify-cancel
+        if len(parts) > 5 and compound == "modify-to" and parts[5].lower() == "cancel":
+            return "modify-cancel"
     keyword = parts[3].lower()
     return KEYWORD_TYPE_MAP.get(keyword)
 
@@ -408,10 +586,25 @@ def validate_readme(
         valid, errs = validate_disburse_change(fields, utxo_value)
         if not valid:
             all_errors.extend(errs)
+    elif tx_type == "modify-cancel":
+        valid, errs = validate_modify_cancel_change(fields, utxo_value)
+        if not valid:
+            all_errors.extend(errs)
     elif tx_type == "modify":
         valid, errs = validate_modify_change(fields, utxo_value)
         if not valid:
             all_errors.extend(errs)
+
+    # 5. Keyhash quorum validation (driven by type_rule_map in keyhashes.json)
+    try:
+        kh_config = load_keyhash_config(repo_root)
+        rule_key = kh_config.get("type_rule_map", {}).get(tx_type)
+        if rule_key:
+            valid, errs = validate_keyhashes(readme_text, repo_root, rule_key)
+            if not valid:
+                all_errors.extend(errs)
+    except FileNotFoundError as e:
+        all_errors.append(str(e))
 
     return len(all_errors) == 0, all_errors
 

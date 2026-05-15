@@ -1,0 +1,118 @@
+{
+  "_source": "https://github.com/SundaeSwap-finance/treasury-contracts/blob/main/lib/intersect.ak",
+  "_note": "Each entity has two valid keyhashes (primary / backup). Update this file when keys are rotated.",
+  "entities": {
+    "leadership_1": {
+      "label": "Intersect Leadership 1",
+      "keyhashes": [
+        "4e72b1facdc7eea745767b8daca40bf73d75eb0e88dcee80d57eec5d",
+        "1c732c072364a2afd42a03228f3816fec37e73f64b61f4c12bab55ee"
+      ]
+    },
+    "leadership_2": {
+      "label": "Intersect Leadership 2",
+      "keyhashes": [
+        "91f5b1d436080c1beca93fbbb96596312d8f615b0ad9e94470af2224",
+        "a1ebdcc53ad3907461d92204f9789ddb640dcdcb0d9fce786a55eaf4"
+      ]
+    },
+    "admin_1": {
+      "label": "Intersect Admin 1",
+      "keyhashes": [
+        "1be0008bf2994524c0eaf0efdae4431e4a61ef7d974804fa794110b7",
+        "27194940fae07315f4dc7a0394535dea7795dab2f232ee40f4457e8f"
+      ]
+    },
+    "admin_2": {
+      "label": "Intersect Admin 2",
+      "keyhashes": [
+        "a664de561ccd2ca9a07c060d4dd7cea4dc68ba89d4bf04b21ff0726f",
+        "821dbb013b85872e91f59e5c3c566390c866aea114a13b1b68f064bc"
+      ]
+    },
+    "admin_3": {
+      "label": "Intersect Admin 3",
+      "keyhashes": [
+        "c236d8dc9441605238a5fe9cc7e6c1a79903289a4249c33122bf9627",
+        "1b5850270f7a77ea9ef570a83fb4b120bf814ec94aa0dba0c9c28844"
+      ]
+    },
+    "cardano_foundation": {
+      "label": "Cardano Foundation",
+      "keyhashes": [
+        "ac3de68e8e1f9af3e00b299e7858bc44e126b33e130d06223d799d5d",
+        "c9f2966a1b357718b45a006954106ba1f7ae9fea16e9826f3486ddd6"
+      ]
+    },
+    "sundae_labs": {
+      "label": "Sundae Labs",
+      "keyhashes": [
+        "1880102b04725318eb7a6f9f481815c82473c2f50cfe9932c85a3bf8",
+        "7a827787c47a4e74f102330cc8566ed9845047903121025911163b9d"
+      ]
+    },
+    "xerberus": {
+      "label": "Xerberus",
+      "keyhashes": [
+        "a7f06cf4e9c03c6b7eac317d5533d573a9be3018fb7b9d95dd778d39",
+        "d8261e2c334b58072042130182de4fb945a46dd1b1974e1df755fe96"
+      ]
+    },
+    "nmkr": {
+      "label": "NMKR",
+      "keyhashes": [
+        "8349f8b41d8337b617947ace444ef95b2b80ff2605cadf969914cf95",
+        "cd820bac2773f2df622c567aa547894177a818593bdae996dd0881e3"
+      ]
+    },
+    "dquadrant": {
+      "label": "DQuadrant",
+      "keyhashes": [
+        "679ad28e567eb42ddb30a5cf6b5f066b2defbce393f19968d711f658",
+        "36e0cf1e52e05ef92e52c7bc2a04493d6bae481b8acbab12ec4300d7"
+      ]
+    }
+  },
+  "quorum_rules": {
+    "modify": [
+      {
+        "label": "Intersect Leadership",
+        "entities": ["leadership_1", "leadership_2"],
+        "required": 1
+      },
+      {
+        "label": "Intersect Admin",
+        "entities": ["admin_1", "admin_2", "admin_3"],
+        "required": 2
+      },
+      {
+        "label": "Oversight Committee",
+        "entities": ["cardano_foundation", "sundae_labs", "xerberus", "nmkr", "dquadrant"],
+        "required": 2
+      }
+    ],
+    "disburse": [
+      {
+        "label": "Intersect Leadership",
+        "entities": ["leadership_1", "leadership_2"],
+        "required": 2
+      },
+      {
+        "label": "Intersect Admin",
+        "entities": ["admin_1", "admin_2", "admin_3"],
+        "required": 2
+      },
+      {
+        "label": "Oversight Committee",
+        "entities": ["cardano_foundation", "sundae_labs", "xerberus", "nmkr", "dquadrant"],
+        "required": 3
+      }
+    ]
+  },
+  "type_rule_map": {
+    "_note": "Maps transaction types to their quorum rule set. Remove a type to skip keyhash validation for it.",
+    "disburse": "disburse",
+    "modify": "modify",
+    "modify-cancel": "modify"
+  }
+}

@@ -1,4 +1,4 @@
-# YYYY-MM-DD Modify [INSERT-TITLE]
+# YYYY-MM-DD Modify/Cancel [INSERT-TITLE]
 
 ## Transaction ID : ``
 
@@ -10,9 +10,15 @@ The UTxO marked `insert label`
 
 ## Transaction Outputs
 
-[No ada should be spent from the vendor contract]
+[Describe the cancelled milestones, the amount returned to the treasury, and the remaining balance redirected to the vendor contract.]
 
-## Change for Vendor Contract
+### Treasury reserve contract
+
+#### DESTINATION:`treasury-address`
+
+#### AMOUNT_LOVELACE:`amount-in-lovelace`
+
+### Change for Vendor Contract
 
 #### CHANGE_AMOUNT_LOVELACE:`amount-in-lovelace`
 
@@ -20,7 +26,7 @@ The UTxO marked `insert label`
 
 ## Datum
 
-[Describe changes to milestones, payment dates, etc. reflected on the datum of the smart contract.]
+[Describe the removal of cancelled milestones from the datum and the modified ones]
 
 ## Required Signatures
 
