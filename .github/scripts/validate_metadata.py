@@ -84,6 +84,48 @@ def validate_folders(folders_str: str) -> bool:
     return all_valid
 
 
+# ---------------------------------------------------------------------------
+# Required-field schema
+# ---------------------------------------------------------------------------
+# "_common" fields must be present in every transaction type.
+# Type-specific fields are looked up by body.event value.
+# Paths use dot notation; "body" itself is checked as a common field.
+
+REQUIRED_FIELDS: dict[str, list[str]] = {
+    "_common": [
+        "@context",
+        "hashAlgorithm",
+        "txAuthor",
+        "instance",
+        "body",
+        "body.event",
+        "body.label",
+        "body.description",
+    ],
+    "disburse": [
+        "body.justification",
+        "body.destination",
+    ],
+    "modify": [
+        "body.identifier",
+        "body.reason",
+        "body.vendor",
+        "body.contract",
+        "body.milestones",
+    ],
+}
+
+
+def _get_nested(data: dict, dotted_path: str) -> bool:
+    """Return True if the dot-notation path exists in data and is not None."""
+    obj = data
+    for key in dotted_path.split("."):
+        if not isinstance(obj, dict) or key not in obj:
+            return False
+        obj = obj[key]
+    return obj is not None
+
+
 def _collect_string_fields(obj, path: str = "") -> list[tuple[str, str]]:
     """
     Recursively collect all string values from a JSON object.
@@ -134,6 +176,18 @@ def validate_metadata_json(metadata_path: str, max_line_length: int = 64) -> tup
     except Exception as e:
         return False, [f"Error reading {metadata_path}: {str(e)}"]
     
+    # Check required fields
+    body = data.get("body") if isinstance(data, dict) else None
+    event_type = body.get("event", "") if isinstance(body, dict) else ""
+
+    for field in REQUIRED_FIELDS["_common"]:
+        if not _get_nested(data, field):
+            errors.append(f"Missing required field: '{field}'")
+
+    for field in REQUIRED_FIELDS.get(event_type, []):
+        if not _get_nested(data, field):
+            errors.append(f"Missing required field: '{field}'")
+
     # Recursively collect all string fields from the entire document
     all_string_fields = _collect_string_fields(data)
 
