@@ -10,7 +10,7 @@ The UTxO marked `UTXO-EC-0002-25-05`
 
 ## Transaction Outputs
 
-Milestones 14 through 18 have been cancelled, each with a budget of 540,800 ada for a total of 2,704,000 ada. This amount should be returned to the treasury contract, while the remaining balance of 6,292,016 ada should remain within vendor contract, with all other milestones.
+Milestones 14 through 18 have been cancelled, each with a budget of 540,800 ada for a total of 2,704,000 ada. This amount should be returned to the treasury contract, while the remaining balance of 6,292,000 ada should remain within vendor contract, with all other milestones.
 
 ### Treasury reserve contract
 
@@ -20,7 +20,7 @@ Milestones 14 through 18 have been cancelled, each with a budget of 540,800 ada 
 
 ### Change for Vendor Contract
 
-#### CHANGE_AMOUNT:`6292016000000`
+#### CHANGE_AMOUNT:`6292000000000`
 
 #### ADDRESS:`addr1xxyzewehw7dh78ea62mkgdnzmcdlcxqt4u39a7pqc0v0at5g9janwaum0u0nm54hvsmx9hsmlsvqhteztmuzps7cl6hq7d35th`
 
