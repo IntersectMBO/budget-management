@@ -1,5 +1,6 @@
 {
-    "@context": "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-contracts/refs/heads/main/offchain/src/metadata/context.jsonld",
+    "@context": ["https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+    "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"],
     "hashAlgorithm": "blake2b-256",
     "txAuthor": "c27...",
     "instance": "1ef...",
@@ -44,8 +45,8 @@
                 "identifier": "m-10",
                 "label": "Milestone 11",
                 "description": [
-                    "10.5- Sponsorship Booked, Confirmed Attendee List, Travel/Lodging ",
-                    "Booked"
+                    "10.5- Sponsorship Booked, Confirmed Attendee List, Travel/Lodgin",
+                    "g Booked"
                 ],
                 "acceptanceCriteria": [
                     "Q2 OSC Event Sponsorship Booked: Confirmed booking of a Gold ",
