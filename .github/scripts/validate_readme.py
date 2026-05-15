@@ -108,7 +108,7 @@ def extract_h4_fields(text: str) -> dict[str, str]:
 
 # --- Koios UTXO query ---
 
-def query_utxo(utxo_ref: str) -> dict | None:
+def query_utxo(utxo_ref: str) -> tuple[dict | None, bool]:
     """
     Query a single UTXO via Koios /utxo_info endpoint.
 
@@ -116,7 +116,9 @@ def query_utxo(utxo_ref: str) -> dict | None:
         utxo_ref: UTXO reference in format 'tx_hash#index'
 
     Returns:
-        dict with UTXO info, or None if not found / API error.
+        (utxo_data, api_error) — api_error is True when the API could not be
+        reached or returned an unexpected response (network/HTTP/parse failure).
+        When api_error is True, emit a warning instead of a validation error.
     """
     url = f"{KOIOS_API_BASE}/utxo_info"
     payload = json.dumps({"_utxo_refs": [utxo_ref], "_extended": False}).encode()
@@ -133,11 +135,11 @@ def query_utxo(utxo_ref: str) -> dict | None:
         with urllib.request.urlopen(req, timeout=30) as resp:
             data = json.loads(resp.read().decode())
             if isinstance(data, list) and len(data) > 0:
-                return data[0]
-            return None
+                return data[0], False
+            return None, False  # API reachable but UTXO not found
     except (urllib.error.URLError, urllib.error.HTTPError, json.JSONDecodeError) as e:
-        print(f"  ⚠️  Koios API error: {e}")
-        return None
+        print(f"  ⚠️  Koios API unreachable: {e}")
+        return None, True  # API error — caller should warn, not fail
 
 
 # --- Validation functions ---
@@ -189,32 +191,36 @@ def validate_heading_structure(
 def validate_utxo_onchain(
     utxo_ref: str,
     expected_address: str,
-) -> tuple[bool, list[str], int | None]:
+) -> tuple[bool, list[str], int | None, bool]:
     """
     Validate that the UTXO exists on-chain, belongs to the expected address,
     and is not spent.
 
-    Returns (is_valid, errors, utxo_value_lovelace or None).
+    Returns (is_valid, errors, utxo_value_lovelace or None, api_unavailable).
+    api_unavailable=True means Koios could not be reached; the caller should
+    emit a warning and skip amount checks rather than treating it as a failure.
     """
     errors: list[str] = []
 
     # Basic format check
     if "#" not in utxo_ref:
-        return False, [f"Invalid UTXO format '{utxo_ref}' — expected 'tx_hash#index'"], None
+        return False, [f"Invalid UTXO format '{utxo_ref}' — expected 'tx_hash#index'"], None, False
 
     parts = utxo_ref.split("#")
     if len(parts) != 2:
-        return False, [f"Invalid UTXO format '{utxo_ref}' — expected 'tx_hash#index'"], None
+        return False, [f"Invalid UTXO format '{utxo_ref}' — expected 'tx_hash#index'"], None, False
 
     tx_hash, index_str = parts
     if not re.match(r'^[0-9a-fA-F]{64}$', tx_hash):
-        return False, [f"Invalid tx_hash in UTXO: '{tx_hash}' — must be 64 hex chars"], None
+        return False, [f"Invalid tx_hash in UTXO: '{tx_hash}' — must be 64 hex chars"], None, False
     if not index_str.isdigit():
-        return False, [f"Invalid index in UTXO: '{index_str}' — must be a number"], None
+        return False, [f"Invalid index in UTXO: '{index_str}' — must be a number"], None, False
 
-    utxo_data = query_utxo(utxo_ref)
+    utxo_data, api_error = query_utxo(utxo_ref)
+    if api_error:
+        return True, [], None, True  # API unreachable — not a validation failure
     if utxo_data is None:
-        return False, [f"UTXO '{utxo_ref}' not found on-chain via Koios"], None
+        return False, [f"UTXO '{utxo_ref}' not found on-chain via Koios"], None, False
 
     # Check address
     onchain_address = utxo_data.get("address", "")
@@ -237,7 +243,7 @@ def validate_utxo_onchain(
         errors.append(f"Could not parse UTXO value: '{value_str}'")
         value_lovelace = None
 
-    return len(errors) == 0, errors, value_lovelace
+    return len(errors) == 0, errors, value_lovelace, False
 
 
 def validate_disburse_change(
@@ -565,35 +571,35 @@ def validate_readme(
 
     # 2. Extract h4 fields
     fields = extract_h4_fields(readme_text)
-
     utxo_ref = fields.get("UTXO", "")
     if not utxo_ref:
         all_errors.append("Missing #### UTXO field in README")
-        return False, all_errors
 
     if skip_onchain:
         print("  ℹ️  Skipping on-chain UTXO checks (--skip-onchain)")
-        return len(all_errors) == 0, all_errors
+    elif utxo_ref:
+        # 3. On-chain UTXO validation
+        expected_address = TYPE_ADDRESS_MAP[tx_type]
+        valid, errs, utxo_value, api_unavailable = validate_utxo_onchain(utxo_ref, expected_address)
+        if api_unavailable:
+            print("  ⚠️  Koios API unreachable — UTXO not checked, amounts skipped")
+        else:
+            if not valid:
+                all_errors.extend(errs)
 
-    # 3. On-chain UTXO validation
-    expected_address = TYPE_ADDRESS_MAP[tx_type]
-    valid, errs, utxo_value = validate_utxo_onchain(utxo_ref, expected_address)
-    if not valid:
-        all_errors.extend(errs)
-
-    # 4. Change amount validation
-    if tx_type == "disburse":
-        valid, errs = validate_disburse_change(fields, utxo_value)
-        if not valid:
-            all_errors.extend(errs)
-    elif tx_type == "modify-cancel":
-        valid, errs = validate_modify_cancel_change(fields, utxo_value)
-        if not valid:
-            all_errors.extend(errs)
-    elif tx_type == "modify":
-        valid, errs = validate_modify_change(fields, utxo_value)
-        if not valid:
-            all_errors.extend(errs)
+            # 4. Change amount validation
+            if tx_type == "disburse":
+                valid, errs = validate_disburse_change(fields, utxo_value)
+                if not valid:
+                    all_errors.extend(errs)
+            elif tx_type == "modify-cancel":
+                valid, errs = validate_modify_cancel_change(fields, utxo_value)
+                if not valid:
+                    all_errors.extend(errs)
+            elif tx_type == "modify":
+                valid, errs = validate_modify_change(fields, utxo_value)
+                if not valid:
+                    all_errors.extend(errs)
 
     # 5. Keyhash quorum validation (driven by type_rule_map in keyhashes.json)
     try:
