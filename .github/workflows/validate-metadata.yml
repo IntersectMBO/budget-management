@@ -5,12 +5,7 @@ on:
     paths:
       - 'metadata/**'
       - '.github/workflows/validate-metadata.yml'
-  push:
-    branches:
-      - main
-      - test-validation
-    paths:
-      - 'metadata/**'
+  workflow_dispatch:
 
 jobs:
   validate-metadata:
