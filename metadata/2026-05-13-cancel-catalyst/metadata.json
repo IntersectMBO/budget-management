@@ -21,7 +21,7 @@
         ],
         "contract": {
             "anchorUrl": [
-                "ipfs:/bafkreiga4zoxqkw3hasrdzzi3k4u6k5uf2dd5n2ldo3ydbs6wz7bbtyq",
+                "ipfs://bafkreiga4zoxqkw3hasrdzzi3k4u6k5uf2dd5n2ldo3ydbs6wz7bbtyq",
                 "tm"
             ],
             "anchorDataHash": "48c759ddd637421818a964992eaf43cb0c2a8532242323393b872e0f2e3c2dee"
