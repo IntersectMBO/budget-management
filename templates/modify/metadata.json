@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-",
+    "contracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+  ],
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "modify",
+        "identifier": "PO123",
+        "otherIdentifiers": [],
+        "label": "Human Readable Title",
+        "description": "long-form markdown annotated description",
+        "reason": "long-form reason for the modification",
+        "vendor": {
+            "label": "Sundae Labs"
+        },
+        "contract": {
+            "anchorUrl": "ipfs://...",
+            "anchorDataHash": "..."
+        },
+        "milestones": [
+            {
+                "identifier": "001",
+                "label": "...",
+                "description": "A human readable description",
+                "acceptanceCriteria": "...",
+                "details": {}
+            }
+        ]
+    }
+}

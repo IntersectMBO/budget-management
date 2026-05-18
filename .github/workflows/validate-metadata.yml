@@ -1,0 +1,69 @@
+name: Validate Metadata
+
+on:
+  pull_request:
+    paths:
+      - 'metadata/**'
+      - '.github/workflows/validate-metadata.yml'
+  workflow_dispatch:
+
+jobs:
+  validate-metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect new metadata folders
+        id: detect-folders
+        run: |
+          # Get the base branch commit (for PR) or previous commit (for push)
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            BASE_COMMIT=${{ github.event.pull_request.base.sha }}
+          else
+            BASE_COMMIT=${{ github.event.before }}
+          fi
+          
+          # If BASE_COMMIT is null (initial commit), use git's empty tree
+          if [ -z "$BASE_COMMIT" ] || [ "$BASE_COMMIT" == "0000000000000000000000000000000000000000" ]; then
+            BASE_COMMIT=$(git hash-object -t tree /dev/null)
+          fi
+          
+          # Find new folders in metadata directory
+          NEW_FOLDERS=$(git diff --name-only --diff-filter=A $BASE_COMMIT HEAD -- metadata/ | \
+            grep -E '^metadata/[^/]+/' | \
+            cut -d/ -f2 | \
+            sort -u)
+          
+          echo "new_folders<<EOF" >> $GITHUB_OUTPUT
+          echo "$NEW_FOLDERS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          echo "Detected new folders: $NEW_FOLDERS"
+
+      - name: Set up Python
+        if: steps.detect-folders.outputs.new_folders != ''
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Run metadata validation
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          python3 .github/scripts/validate_metadata.py \
+            --folders "${{ steps.detect-folders.outputs.new_folders }}" \
+            --metadata-path metadata
+
+      - name: Run README validation
+        if: steps.detect-folders.outputs.new_folders != ''
+        run: |
+          python3 .github/scripts/validate_readme.py \
+            --folders "${{ steps.detect-folders.outputs.new_folders }}" \
+            --metadata-path metadata \
+            --repo-root .
+
+      - name: Validation complete
+        if: success()
+        run: echo "✅ All metadata validation checks passed!"
