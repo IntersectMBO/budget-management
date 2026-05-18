@@ -1,0 +1,10 @@
+{
+  "vendor_project": {
+    "title": "IOG - Blockfrost Platform Community Budget Proposal",
+    "id": "EG-0003-25",
+    "contract_description": "Blockfrost aims to decentralize its Cardano Blockchain API through the Blockfrost Platform and Blockfrost Gateway, enabling a network of Icebreakers operated by SPOs and node operators to process API requests and share revenue. All components are open-sourced to ensure transparency and avoid vendor lock-in.",
+    "utxo_identifier": "UTXO-EC-0003-25"
+    "pssc_vendor_credential": "addr1q9wmpnysup5nv7e85558rv6a0cw4uz2zxvsldptnz4cccazeh0mt8kv5830pxutyuq8pm53apc5x7gzudqjyqesvkr2smjvf7h"
+    "allowlist_address": "addr1qyvp70jddlkenaz8fm930ufakc7vqplxcgdtxcmyguatt4u6wmzja59e4z6qdu3cpa67a2vnwtj49c8egsqm9q8dqawqggcuc2"
+  }
+}

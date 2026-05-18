@@ -1,0 +1,36 @@
+"450,667",10/30/2025,"MS10.1 - LSM: Reception and review of the LSM functionality
+Deliverables: Integration code submitted , Comms, tutorials, guides, support",Pause
+"450,667",11/30/2025,"MS10.2 - LSM: Integration of LSM to the Node (as a beta feature)
+Deliverables: Report demonstrating readiness",Pause
+"450,667",12/30/2025,"MS10.3 - LSM: The LSM feature integrated into the Node passing P&T and Testing
+Deliverables: P&T and Testing report",Pause
+"450,667",12/30/2025,"MS10.4 - LSM: Releasing a Node version that includes LSM as a beta feature
+Deliverables: New release in cardano-node github repo",Pause
+"450,666",2/28/2026,"MS10.5 - LSM: Support the beta-users, obtain feedback and release patches as needed.
+Deliverables: Receive feedback from community and release patches as needed",
+"450,666",4/30/2026,"MS10.6 - LSM: Upgrade LSM to 1.0
+Deliverables: Node version release",
+"901,333",1/30/2026,"MS11.1 - Ledger HD: Identifying the different data-sets that need to be moved from Memory to Drive.
+Deliverables: Integration code submitted , Comms, tutorials, guides, support",
+"901,333",4/30/2026,"MS11.2 - Ledger HD: Moving `Reward accounts` to Drive
+Deliverables: Community report demonstrating readiness",
+"901,334",7/30/2026,"MS11.3 - Ledger HD: Moving `InstantStake` to Drive
+Deliverables: Community report demonstrating readiness",
+"676,000",12/30/2025,"MS12.1 - Revised Stake Pool Incentive: Identify the current issues with Stakepool schemes
+Deliverables: Community engagement links",Pause
+"676,000",1/30/2026,"MS12.2 - Revised Stake Pool Incentive: Review legacy and any new proposals
+Deliverables: Community engagement links",
+"676,000",4/30/2026,"MS12.3 - Revised Stake Pool Incentive: Design evaluation and estimate for build
+Deliverables: Demonstration report (video or blog)",
+"676,000",4/30/2026,"MS12.4 - Revised Stake Pool Incentive: Produce a demo/show and tell of the proposal to showcase to the community and dReps
+Deliverables: Demonstration report (video or blog)",
+"540,800",12/30/2025,"MS13.1 - Nested Transactions: Preparation work
+Deliverables: CIP-0118 is merged. Necessary tech debt is resolved. New Dijkstra era is defined.",Pause
+"540,800",12/30/2025,"MS13.2 - Nested Transactions: Transaction definition
+Deliverables: New ledger era is integrated all the way into cardano-node",Pause
+"540,800",1/30/2026,"MS13.3 - Nested Transactions: Ledger rules
+Deliverables: Specification in Agda is mostly complete.",
+"540,800",4/30/2026,"MS13.4 - Nested Transactions: Plutus Context
+Deliverables: Ability to execute PlutusV4 script on a testnet.",
+"540,800",7/30/2026,"MS13.5 - Nested Transactions: Testing and Conformance
+Deliverables: cardano-node release that is fully capable of handling Nested Transactions in the new Dijkstra era",

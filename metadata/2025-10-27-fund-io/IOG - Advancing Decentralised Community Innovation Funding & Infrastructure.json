@@ -1,0 +1,10 @@
+{
+  "vendor_project": {
+    "title": "IOG - Advancing Decentralised Community Innovation Funding & Infrastructure",
+    "id": "EMI-0001b-25",
+    "contract_description": "The Supplier will provide design and development services to deliver a comprehensive technical upgrade to the Project Catalyst platform. These services are designed to overhaul both the user experiences and the underlying engine of the system.",
+    "utxo_identifier": "UTXO-EMI-0001-25"
+    "pssc_vendor_credential": "addr1q8hcxa8gk6c9pxwxlx6et067sjdppk4zpq8x339yw3wz3cf30kke5ae0atr5xz7kzv9mwzwnme76smww7ncpvnlsj92s2aq68l"
+    "allowlist_address": "addr1qyw2fxt9lrs3cfdv6pp0ja8a0dhgdfjc6kqfa8z5uf0drp0wh7auq7lkvxhqjsut4wc3qy3f3rhdeawlh0yw7twdq5uq0cvavl"
+  }
+}
