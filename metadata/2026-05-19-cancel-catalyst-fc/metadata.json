@@ -1,0 +1,34 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "cancel",
+        "identifier": "EMI-0001a-25",
+        "vendor": {
+            "label": [
+                "addr1q8q7jyap76l0d5gqj8naw5t49yu3f0h7qkzsps9z0gfjcu25uj747vu83mv",
+                "g3fuh6ttdgwshjwtcne6esrpct2uzmnuqdqd82j"
+            ]
+        },
+        "reason": [
+            "With administration of Catalyst FC transferring from Input Outpu",
+            "t to the Cardano Foundation, Fund 15 will no longer go ahead und",
+            "er the scope of the existing “Catalyst 2025 Proposal by Input Ou",
+            "tput: Advancing Decentralised Community Innovation Funding & Inf",
+            "rastructure” SoW.The corresponding Milestone payment for Fund 15",
+            " shall therefore be cancelled and returned to the treasury."
+        ],
+        "contract": {
+            "anchorUrl": [
+                "ipfs://bafkreifatkz7yerfoeo3pbxmjfhhwsfq75tb2ohehwmcd7os2jhpnuqp",
+                "by"
+            ],
+            "anchorDataHash": "89076829e4e2c759a4f226e213685c1bac3b4fdea6a31c4f66f6f124a941dda2"
+        }
+    }
+}
