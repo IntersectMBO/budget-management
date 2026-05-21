@@ -113,7 +113,6 @@
     "_note": "Maps transaction types to their quorum rule set. Remove a type to skip keyhash validation for it.",
     "disburse": "disburse",
     "modify": "modify",
-    "modify-cancel": "modify",
-    "cancel": "modify"
+    "modify-cancel": "modify"
   }
 }
