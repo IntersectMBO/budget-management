@@ -1,0 +1,30 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "hashAlgorithm": "blake2b-256",
+    "txAuthor": "c27...",
+    "instance": "1ef...",
+    "body": {
+        "event": "cancel",
+        "identifier": "UTXO-EMI-0001-25",
+        "vendor": {
+            "label": "IOG"
+        },
+        "reason": [
+            "With Catalyst Administrator transferring from IOG to the Cardano",
+            " Foundation, the Hermes work under the Catalyst 2025 Proposal by",
+            " Input Output: Advancing Decentralised Community Innovation Fund",
+            "ing & Infrastructure SoW will no longer continue and outstanding",
+            " milestones should be cancelled."
+        ],
+        "contract": {
+            "anchorUrl": [
+                "ipfs://bafkreiga4zoxqkw3hasrdzzi3k4u6k5uf2dd5n2ldo3ydbs6wz7bbtyq",
+                "tm"
+            ],
+            "anchorDataHash": "48c759ddd637421818a964992eaf43cb0c2a8532242323393b872e0f2e3c2dee"
+        }
+    }
+}
