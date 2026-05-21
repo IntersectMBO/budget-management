@@ -1,35 +1,40 @@
-# 202x-xx-xx [Inset Title]
+# YYYY-MM-DD Cancel [INSERT-TITLE]
 
 ## Transaction ID : ``
 
 ## Transaction Inputs
 
-The UTxO marked ``
+The UTxO marked `insert label`
 
-#### UTXO:``
+#### UTXO:`tx-hash#index`
 
 ## Transaction Outputs
 
-This project is being cancelled and the remaining ada will be returned back to the treasury reserve contract.
+[This project is being cancelled and the remaining ada will be returned back to the treasury reserve contract.]
 
 ### Treasury reserve contract
 
-#### DESTINATION:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
+#### DESTINATION:`treasury-address`
 
-#### AMOUNT_LOVELACE:``
+#### AMOUNT_LOVELACE:`amount-in-lovelace`
 
 ## Datum
 
-Cancellation of the remaining milestones
+[All milestones are being cancelled.]
 
 ## Required Signatures
 
 - Oversight Committee
+  - [org] keyhash : [keyhash]
+  - [org] keyhash : [keyhash]
 - Intersect Leadership
+  - Leadership [n] keyhash: [keyhash]
 - Intersect Admin
+  - Admin [n] keyhash : [keyhash]
+  - Admin [n] keyhash : [keyhash]
 - The vendor
-  - Vendor payment keyhash :
-  - Vendor wallet address :
+  - Vendor payment keyhash : [keyhash]
+  - Vendor wallet address : [address]
 
 ## Transaction Metadata
 
