@@ -311,14 +311,17 @@ def validate_disburse_change(
     return len(errors) == 0, errors
 
 
-def validate_modify_cancel_change(
+def validate_modify_types(
     fields: dict[str, str],
     utxo_value_lovelace: int | None,
 ) -> tuple[bool, list[str]]:
     """
-    For modify-cancel: verify AMOUNT_LOVELACE + CHANGE_AMOUNT_LOVELACE == UTXO value.
-    AMOUNT_LOVELACE is returned to the treasury reserve contract;
-    CHANGE_AMOUNT_LOVELACE stays in the vendor contract.
+    For modify, modify-cancel, and cancel: verify that the declared output
+    amounts sum to the UTxO input value.
+
+    - modify:        CHANGE_AMOUNT_LOVELACE == UTxO value
+    - modify-cancel: AMOUNT_LOVELACE + CHANGE_AMOUNT_LOVELACE == UTxO value
+    - cancel:        AMOUNT_LOVELACE == UTxO value
 
     Returns (is_valid, errors).
     """
@@ -327,115 +330,40 @@ def validate_modify_cancel_change(
     amount_str = fields.get("AMOUNT_LOVELACE", "")
     change_str = fields.get("CHANGE_AMOUNT_LOVELACE", "")
 
-    if not amount_str:
-        errors.append("Missing AMOUNT_LOVELACE field")
-    if not change_str:
-        errors.append("Missing CHANGE_AMOUNT_LOVELACE field")
-    if errors:
+    if not amount_str and not change_str:
+        errors.append("Missing AMOUNT_LOVELACE and/or CHANGE_AMOUNT_LOVELACE fields")
         return False, errors
 
-    try:
-        amount_lovelace = int(amount_str)
-    except ValueError:
-        return False, [f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer"]
+    total = 0
+    parts_desc: list[str] = []
 
-    try:
-        change_lovelace = int(change_str)
-    except ValueError:
-        return False, [f"Invalid CHANGE_AMOUNT_LOVELACE value: '{change_str}' — must be an integer"]
+    if amount_str:
+        try:
+            v = int(amount_str)
+            total += v
+            parts_desc.append(f"AMOUNT_LOVELACE ({v})")
+        except ValueError:
+            errors.append(f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer")
+
+    if change_str:
+        try:
+            v = int(change_str)
+            total += v
+            parts_desc.append(f"CHANGE_AMOUNT_LOVELACE ({v})")
+        except ValueError:
+            errors.append(f"Invalid CHANGE_AMOUNT_LOVELACE value: '{change_str}' — must be an integer")
+
+    if errors:
+        return False, errors
 
     if utxo_value_lovelace is None:
         errors.append("Cannot verify amounts: UTXO value unknown")
         return False, errors
 
-    actual_total = amount_lovelace + change_lovelace
-    if actual_total != utxo_value_lovelace:
+    if total != utxo_value_lovelace:
         errors.append(
-            f"Amount mismatch: AMOUNT_LOVELACE ({amount_lovelace}) + "
-            f"CHANGE_AMOUNT_LOVELACE ({change_lovelace}) = {actual_total}, "
-            f"expected {utxo_value_lovelace} (UTXO value)"
-        )
-
-    return len(errors) == 0, errors
-
-
-def validate_cancel_change(
-    fields: dict[str, str],
-    utxo_value_lovelace: int | None,
-) -> tuple[bool, list[str]]:
-    """
-    For cancel: verify AMOUNT_LOVELACE == UTXO value.
-    The full UTxO value is returned to the treasury reserve contract;
-    nothing remains in the vendor contract.
-
-    Returns (is_valid, errors).
-    """
-    errors: list[str] = []
-
-    amount_str = fields.get("AMOUNT_LOVELACE", "")
-
-    if not amount_str:
-        errors.append("Missing AMOUNT_LOVELACE field")
-        return False, errors
-
-    try:
-        amount_lovelace = int(amount_str)
-    except ValueError:
-        errors.append(
-            f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer"
-        )
-        return False, errors
-
-    if utxo_value_lovelace is None:
-        errors.append("Cannot verify amount: UTXO value unknown")
-        return False, errors
-
-    if amount_lovelace != utxo_value_lovelace:
-        errors.append(
-            f"AMOUNT_LOVELACE mismatch: got {amount_lovelace}, "
-            f"expected {utxo_value_lovelace} "
-            f"(full UTxO value must be returned to treasury on cancel)"
-        )
-
-    return len(errors) == 0, errors
-
-
-def validate_modify_change(
-    fields: dict[str, str],
-    utxo_value_lovelace: int | None,
-) -> tuple[bool, list[str]]:
-    """
-    For modify: verify CHANGE_AMOUNT_LOVELACE == UTXO value.
-    No ada should be spent from the vendor contract, so the full
-    value must be returned.
-
-    Returns (is_valid, errors).
-    """
-    errors: list[str] = []
-
-    change_str = fields.get("CHANGE_AMOUNT_LOVELACE", "")
-
-    if not change_str:
-        errors.append("Missing CHANGE_AMOUNT_LOVELACE field")
-        return False, errors
-
-    try:
-        change_lovelace = int(change_str)
-    except ValueError:
-        errors.append(
-            f"Invalid CHANGE_AMOUNT_LOVELACE value: '{change_str}' — must be an integer (lovelace)"
-        )
-        return False, errors
-
-    if utxo_value_lovelace is None:
-        errors.append("Cannot verify change amount: UTXO value unknown")
-        return False, errors
-
-    if change_lovelace != utxo_value_lovelace:
-        errors.append(
-            f"CHANGE_AMOUNT_LOVELACE mismatch: got {change_lovelace}, "
-            f"expected {utxo_value_lovelace} "
-            f"(no ada should be spent from the vendor contract)"
+            f"Amount mismatch: {' + '.join(parts_desc)} = {total}, "
+            f"expected {utxo_value_lovelace} (UTxO value)"
         )
 
     return len(errors) == 0, errors
@@ -639,16 +567,8 @@ def validate_readme(
                 valid, errs = validate_disburse_change(fields, utxo_value)
                 if not valid:
                     all_errors.extend(errs)
-            elif tx_type == "modify-cancel":
-                valid, errs = validate_modify_cancel_change(fields, utxo_value)
-                if not valid:
-                    all_errors.extend(errs)
-            elif tx_type == "modify":
-                valid, errs = validate_modify_change(fields, utxo_value)
-                if not valid:
-                    all_errors.extend(errs)
-            elif tx_type == "cancel":
-                valid, errs = validate_cancel_change(fields, utxo_value)
+            elif tx_type in ("modify", "modify-cancel", "cancel"):
+                valid, errs = validate_modify_types(fields, utxo_value)
                 if not valid:
                     all_errors.extend(errs)
 
