@@ -45,6 +45,7 @@ KEYWORD_TYPE_MAP = {
     "modify": "modify",
     "modification": "modify",
     "modify-cancel": "modify-cancel",
+    "cancel" : "modify-cancel",
 }
 
 # Expected address per transaction type
