@@ -99,19 +99,28 @@ REQUIRED_FIELDS: dict[str, list[str]] = {
         "instance",
         "body",
         "body.event",
-        "body.label",
-        "body.description",
+
     ],
     "disburse": [
         "body.justification",
-        "body.destination",
+        "body.destination",        
+        "body.label",
+        "body.description",
     ],
     "modify": [
         "body.identifier",
         "body.reason",
         "body.vendor",
         "body.contract",
-        "body.milestones",
+        "body.milestones",        
+        "body.label",
+        "body.description",
+    ],
+    "cancel": [
+        "body.identifier",
+        "body.vendor",
+        "body.reason",
+        "body.contract",
     ],
 }
 
