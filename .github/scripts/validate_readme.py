@@ -8,7 +8,11 @@ Validates README.md files in metadata folders against their expected template
 Checks performed:
 1. Heading structure matches the template in strict order
 2. UTXO exists on-chain, belongs to the expected address, and is not spent
-3. Change amount is correct (varies by type)
+3. Change amount is correct (varies by type):
+   - disburse:       CHANGE_AMOUNT_LOVELACE = UTxO value - AMOUNT_LOVELACE
+   - modify:         CHANGE_AMOUNT_LOVELACE = UTxO value
+   - modify-cancel:  AMOUNT_LOVELACE + CHANGE_AMOUNT_LOVELACE = UTxO value
+   - cancel:         AMOUNT_LOVELACE = UTxO value
 4. Required keyhashes satisfy the intersect.ak quorum rules
 """
 
@@ -45,7 +49,7 @@ KEYWORD_TYPE_MAP = {
     "modify": "modify",
     "modification": "modify",
     "modify-cancel": "modify-cancel",
-    "cancel" : "modify-cancel",
+    "cancel": "cancel",
 }
 
 # Expected address per transaction type
@@ -53,6 +57,7 @@ TYPE_ADDRESS_MAP = {
     "disburse": TREASURY_ADDRESS,
     "modify": VENDOR_ADDRESS,
     "modify-cancel": VENDOR_ADDRESS,
+    "cancel": VENDOR_ADDRESS,
 }
 
 
@@ -354,6 +359,47 @@ def validate_modify_cancel_change(
     return len(errors) == 0, errors
 
 
+def validate_cancel_change(
+    fields: dict[str, str],
+    utxo_value_lovelace: int | None,
+) -> tuple[bool, list[str]]:
+    """
+    For cancel: verify AMOUNT_LOVELACE == UTXO value.
+    The full UTxO value is returned to the treasury reserve contract;
+    nothing remains in the vendor contract.
+
+    Returns (is_valid, errors).
+    """
+    errors: list[str] = []
+
+    amount_str = fields.get("AMOUNT_LOVELACE", "")
+
+    if not amount_str:
+        errors.append("Missing AMOUNT_LOVELACE field")
+        return False, errors
+
+    try:
+        amount_lovelace = int(amount_str)
+    except ValueError:
+        errors.append(
+            f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer"
+        )
+        return False, errors
+
+    if utxo_value_lovelace is None:
+        errors.append("Cannot verify amount: UTXO value unknown")
+        return False, errors
+
+    if amount_lovelace != utxo_value_lovelace:
+        errors.append(
+            f"AMOUNT_LOVELACE mismatch: got {amount_lovelace}, "
+            f"expected {utxo_value_lovelace} "
+            f"(full UTxO value must be returned to treasury on cancel)"
+        )
+
+    return len(errors) == 0, errors
+
+
 def validate_modify_change(
     fields: dict[str, str],
     utxo_value_lovelace: int | None,
@@ -599,6 +645,10 @@ def validate_readme(
                     all_errors.extend(errs)
             elif tx_type == "modify":
                 valid, errs = validate_modify_change(fields, utxo_value)
+                if not valid:
+                    all_errors.extend(errs)
+            elif tx_type == "cancel":
+                valid, errs = validate_cancel_change(fields, utxo_value)
                 if not valid:
                     all_errors.extend(errs)
 
