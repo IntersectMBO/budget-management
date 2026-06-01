@@ -10,7 +10,7 @@
         "body": {
             "event": "initialize",
             "reason": [
-                "Withdrawing Intersect administered funds for IO treasury withdrawal",
+                "Withdrawing Intersect administered funds for IO treasury withdrawals for 2026",
                 " governance actions enacted at the start of Epoch 634"
             ],
             "outputs": {
