@@ -1,0 +1,44 @@
+{
+    "1694": {
+        "@context": [
+            "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+            "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+        ],
+        "instance": "...",
+        "txAuthor": "...",
+        "hashAlgorithm": "blake2b-256",
+        "body": {
+            "event": "initialize",
+            "reason": [
+                "Withdrawing Intersect administered funds for IO treasury withdrawal",
+                " governance actions enacted at the start of Epoch 634"
+            ],
+            "outputs": {
+                "0": {
+                    "label": "IO: Developer Experience Initiative",
+                    "identifier": "CTW-26-0001"
+                },
+                "1": {
+                    "label": "IO: Cardano Upgrades",
+                    "identifier": "CTW-26-0002"
+                },
+                "2": {
+                    "label": "IO: Consensus Initiative",
+                    "identifier": "CTW-26-0003"
+                },
+                "3": {
+                    "label": "IO & Ensurable Systems: Cardano Maintenance Initiative",
+                    "identifier": "CTW-26-0004"
+                },
+                "4": {
+                    "label": "IO: Cardano High Assurance Technical Collaboration",
+                    "identifier": "CTW-26-0005"
+                },
+                "5": {
+                    "label": "IO & VacuumLabs: Enhancing Plutus - Performance, Correctness, and Usability",
+                    "identifier": "CTW-26-0006"
+                }
+            }
+        }
+    }
+}
