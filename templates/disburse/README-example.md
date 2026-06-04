@@ -1,37 +1,52 @@
-# 2026-02/05 Disburse Critical Integrations Budget
+# 2026-06-04 Disburse IO-2026
 
-## Transaction Inputs
+## Transaction Inputs [6]
 
-The UTxO marked 'Cardano Critical Integrations Budget'
+#### UTXO 1:`tx-hash#index`
 
-#### UTXO:`5e228fe50f376e00a17356594465c13c766373ee3d8559dc88fdaa6220fbdab0#0`
+- LABEL:`inset label`
+- IDENTIFIER:`CTW-26-0001`
 
-## The UTxO Metadata
+#### UTXO 2:`tx-hash#index`
 
-Metadata present in the chosen UTxO
+- LABEL:`inset label`
+- IDENTIFIER:`CTW-26-0002`
 
-#### LABEL:`Cardano Critical Integrations Budget`
+#### UTXO 3:`tx-hash#index`
 
-#### IDENTIFIER:`UTXO-CR0000-00`
+- LABEL:`inset label`
+- IDENTIFIER:`CTW-26-0003`
 
-## Transaction Outputs
+#### UTXO 4:`tx-hash#index`
+
+- LABEL:`inset label`
+- IDENTIFIER:`CTW-26-0004`
+
+#### UTXO 5:`tx-hash#index`
+
+- LABEL:`inset label`
+- IDENTIFIER:`CTW-26-0005`
+
+#### UTXO 6:`tx-hash#index`
+
+- LABEL:`inset label`
+- IDENTIFIER:`CTW-26-0001`
+
+## Transaction Outputs [1]
 
 We only cover notable outputs, other outputs may be required by the orchestrating wallet to cover transaction fees.
 
-#### DESTINATION:`addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw`
+#### DESTINATION:`addr1qyfh38u252w8s54g0tjp8urhgl26f34rklwndsy3skf5gvavqjhqvzuudts2lgytfzdd4x9rtxszvclawvadmtxtuqss5rasc0`
 
-#### AMOUNT_LOVELACE:`70000000000000`
-
-70,000,000 ada to Intersect’s Custodian Environment: addr1qylfcqkrhszht6alcgnsknltmdf2z87fll8rwzh0ke2zznygm2z48rz9tgtdmwrwujpqnu5wxdl8hwmdhhpfr4a0r0sq4mx7nw
+#### AMOUNT_LOVELACE:`131510090000000`
 
 ## Change for Treasury Reserve Contract
 
-No change from the UTxO will be returned or remain at the Treasury Reserve Contract address: [addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj]
-(https://beta.cexplorer.io/address/addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj)
+All ada from selected UTxO is expected to be disbursed to Intersect Custodian wallet, no change is expected to be returned to TRC.
 
-#### CHANGE_AMOUNT_LOVELACE:N/A
+#### CHANGE_AMOUNT_LOVELACE:`0`
 
-#### ADDRESS:N/A
+#### ADDRESS:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
 
 ## Signatures
 
@@ -45,6 +60,7 @@ No change from the UTxO will be returned or remain at the Treasury Reserve Contr
 - Intersect Admin
   - Admin 2 keyhash: a664de561ccd2ca9a07c060d4dd7cea4dc68ba89d4bf04b21ff0726f
   - Admin 3 keyhash: c236d8dc9441605238a5fe9cc7e6c1a79903289a4249c33122bf9627
-  
+
 ## Transaction Metadata
-See [metadata.json](./metadata.json). 
+
+See [metadata.json](./metadata.json).

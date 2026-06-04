@@ -112,6 +112,32 @@ def extract_h4_fields(text: str) -> dict[str, str]:
     return fields
 
 
+def extract_utxo_refs(text: str) -> list[str]:
+    """
+    Extract all UTxO refs from plain '#### UTXO:' or numbered '#### UTXO N:' headings.
+    Returns them in document order.
+    """
+    refs = []
+    for line in text.splitlines():
+        m = re.match(r'^####\s+UTXO(?:\s+\d+)?:\s*`?([^`\s]+)`?\s*$', line.strip())
+        if m and m.group(1):
+            refs.append(m.group(1))
+    return refs
+
+
+def extract_all_amount_lovelace(text: str) -> list[str]:
+    """
+    Extract all AMOUNT_LOVELACE values from h4 headings, in document order.
+    Handles multiple destinations each with their own AMOUNT_LOVELACE.
+    """
+    values = []
+    for line in text.splitlines():
+        m = re.match(r'^####\s+AMOUNT_LOVELACE:\s*`?([^`]*)`?\s*$', line.strip())
+        if m:
+            values.append(m.group(1).strip())
+    return values
+
+
 # --- Koios UTXO query ---
 
 def query_utxo(utxo_ref: str) -> tuple[dict | None, bool]:
@@ -253,43 +279,40 @@ def validate_utxo_onchain(
 
 
 def validate_disburse_change(
-    fields: dict[str, str],
-    utxo_value_lovelace: int | None,
+    readme_text: str,
+    utxo_values: list[int],
 ) -> tuple[bool, list[str]]:
     """
-    For disburse: verify CHANGE_AMOUNT_LOVELACE = UTXO value - AMOUNT_LOVELACE.
-    All values are in lovelace.
+    For disburse: verify sum(UTxO values) == sum(AMOUNT_LOVELACE) + CHANGE_AMOUNT_LOVELACE.
 
-    If CHANGE_AMOUNT_LOVELACE is 'N/A', the full UTXO is being disbursed;
-    we verify UTXO value == AMOUNT_LOVELACE.
+    Supports multiple UTxO inputs and multiple destination outputs.
 
     Returns (is_valid, errors).
     """
     errors: list[str] = []
 
-    amount_str = fields.get("AMOUNT_LOVELACE", "")
+    amount_strs = extract_all_amount_lovelace(readme_text)
+    if not amount_strs:
+        return False, ["Missing AMOUNT_LOVELACE field(s)"]
+
+    total_amount = 0
+    for a_str in amount_strs:
+        try:
+            total_amount += int(a_str)
+        except ValueError:
+            errors.append(f"Invalid AMOUNT_LOVELACE value: '{a_str}' — must be an integer")
+            return False, errors
+
+    fields = extract_h4_fields(readme_text)
     change_str = fields.get("CHANGE_AMOUNT_LOVELACE", "")
-
-    if not amount_str:
-        errors.append("Missing AMOUNT_LOVELACE field")
-        return False, errors
-
-    try:
-        amount_lovelace = int(amount_str)
-    except ValueError:
-        errors.append(f"Invalid AMOUNT_LOVELACE value: '{amount_str}' — must be an integer")
-        return False, errors
-
-    if utxo_value_lovelace is None:
-        errors.append("Cannot verify change amount: UTXO value unknown")
-        return False, errors
+    total_utxo = sum(utxo_values)
 
     if change_str.upper() == "N/A" or change_str == "":
-        if utxo_value_lovelace != amount_lovelace:
+        if total_utxo != total_amount:
             errors.append(
-                f"CHANGE_AMOUNT_LOVELACE is N/A but UTXO value ({utxo_value_lovelace}) != "
-                f"AMOUNT_LOVELACE ({amount_lovelace}). "
-                f"Expected change of {utxo_value_lovelace - amount_lovelace} lovelace"
+                f"CHANGE_AMOUNT_LOVELACE is N/A but sum of UTxO values ({total_utxo}) "
+                f"!= sum of AMOUNT_LOVELACE ({total_amount}). "
+                f"Expected change of {total_utxo - total_amount} lovelace"
             )
     else:
         try:
@@ -300,12 +323,12 @@ def validate_disburse_change(
             )
             return False, errors
 
-        expected_change = utxo_value_lovelace - amount_lovelace
+        expected_change = total_utxo - total_amount
         if change_lovelace != expected_change:
             errors.append(
                 f"CHANGE_AMOUNT_LOVELACE mismatch: got {change_lovelace}, "
                 f"expected {expected_change} "
-                f"(UTXO {utxo_value_lovelace} - AMOUNT_LOVELACE {amount_lovelace})"
+                f"(sum of UTxO values {total_utxo} - sum of AMOUNT_LOVELACE {total_amount})"
             )
 
     return len(errors) == 0, errors
@@ -539,38 +562,157 @@ def validate_readme(
             f"Expected keyword: {', '.join(KEYWORD_TYPE_MAP.keys())}"
         ]
 
-    # 1. Heading structure validation
-    valid, errs = validate_heading_structure(readme_text, tx_type, repo_root)
-    if not valid:
-        all_errors.extend(errs)
+    if tx_type == "disburse":
+        # --- Disburse: count-based structural validation ---
+        lines = readme_text.splitlines()
 
-    # 2. Extract h4 fields
-    fields = extract_h4_fields(readme_text)
-    utxo_ref = fields.get("UTXO", "")
-    if not utxo_ref:
-        all_errors.append("Missing #### UTXO field in README")
-
-    if skip_onchain:
-        print("  ℹ️  Skipping on-chain UTXO checks (--skip-onchain)")
-    elif utxo_ref:
-        # 3. On-chain UTXO validation
-        expected_address = TYPE_ADDRESS_MAP[tx_type]
-        valid, errs, utxo_value, api_unavailable = validate_utxo_onchain(utxo_ref, expected_address)
-        if api_unavailable:
-            print("  ⚠️  Koios API unreachable — UTXO not checked, amounts skipped")
+        # 1a. Parse input count from '## Transaction Inputs [N]'
+        inputs_match = re.search(
+            r'^##\s+Transaction Inputs\s*\[(\d+)\]', readme_text, re.MULTILINE
+        )
+        if not inputs_match:
+            all_errors.append(
+                "Missing or invalid '## Transaction Inputs [N]' heading — "
+                "expected a count, e.g. [6]"
+            )
         else:
-            if not valid:
-                all_errors.extend(errs)
+            n_inputs = int(inputs_match.group(1))
+            # N=1 → plain '#### UTXO:', N>1 → '#### UTXO 1:' … '#### UTXO N:'
+            utxo_patterns = (
+                [(r'^####\s+UTXO:', "#### UTXO:")]
+                if n_inputs == 1
+                else [
+                    (rf'^####\s+UTXO\s+{i}:', f"#### UTXO {i}:")
+                    for i in range(1, n_inputs + 1)
+                ]
+            )
+            for pattern, label in utxo_patterns:
+                utxo_idx = next(
+                    (i for i, ln in enumerate(lines) if re.match(pattern, ln.strip())),
+                    None,
+                )
+                if utxo_idx is None:
+                    all_errors.append(f"Missing UTxO entry: '{label}'")
+                    continue
+                block: list[str] = []
+                for ln in lines[utxo_idx + 1:]:
+                    if re.match(r'^#{1,6}\s+', ln.strip()):
+                        break
+                    block.append(ln)
+                block_text = "\n".join(block)
+                if not re.search(r'-\s+LABEL:', block_text):
+                    all_errors.append(f"Missing LABEL for: '{label}'")
+                if not re.search(r'-\s+IDENTIFIER:', block_text):
+                    all_errors.append(f"Missing IDENTIFIER for: '{label}'")
 
-            # 4. Change amount validation
-            if tx_type == "disburse":
-                valid, errs = validate_disburse_change(fields, utxo_value)
+        # 1b. Parse output count from '## Transaction Outputs [M]'
+        outputs_match = re.search(
+            r'^##\s+Transaction Outputs\s*\[(\d+)\]', readme_text, re.MULTILINE
+        )
+        if not outputs_match:
+            all_errors.append(
+                "Missing or invalid '## Transaction Outputs [M]' heading — "
+                "expected a count, e.g. [1]"
+            )
+        else:
+            n_outputs = int(outputs_match.group(1))
+            dest_patterns = (
+                [(r'^####\s+DESTINATION:', "#### DESTINATION:")]
+                if n_outputs == 1
+                else [
+                    (rf'^####\s+DESTINATION\s+{i}:', f"#### DESTINATION {i}:")
+                    for i in range(1, n_outputs + 1)
+                ]
+            )
+            for pattern, label in dest_patterns:
+                dest_idx = next(
+                    (i for i, ln in enumerate(lines) if re.match(pattern, ln.strip())),
+                    None,
+                )
+                if dest_idx is None:
+                    all_errors.append(f"Missing destination entry: '{label}'")
+                    continue
+                next_h4 = None
+                for ln in lines[dest_idx + 1:]:
+                    stripped = ln.strip()
+                    if re.match(r'^#{1,3}\s+', stripped):
+                        break
+                    if re.match(r'^####\s+', stripped):
+                        next_h4 = stripped
+                        break
+                if next_h4 is None or not re.match(r'^####\s+AMOUNT_LOVELACE:', next_h4):
+                    all_errors.append(f"Missing AMOUNT_LOVELACE after: '{label}'")
+
+        # 1c. Fixed fields
+        fields = extract_h4_fields(readme_text)
+        if "CHANGE_AMOUNT_LOVELACE" not in fields:
+            all_errors.append("Missing #### CHANGE_AMOUNT_LOVELACE field")
+        if "ADDRESS" not in fields:
+            all_errors.append("Missing #### ADDRESS field")
+
+        # 2. Extract all UTxO refs for on-chain validation
+        utxo_refs = extract_utxo_refs(readme_text)
+        if not utxo_refs:
+            all_errors.append("Missing #### UTXO field in README")
+
+        if skip_onchain:
+            print("  ℹ️  Skipping on-chain UTXO checks (--skip-onchain)")
+        elif utxo_refs:
+            expected_address = TYPE_ADDRESS_MAP[tx_type]
+            utxo_values: list[int] = []
+            api_unavailable = False
+            for ref in utxo_refs:
+                valid, errs, utxo_value, api_err = validate_utxo_onchain(
+                    ref, expected_address
+                )
+                if api_err:
+                    api_unavailable = True
+                    break
                 if not valid:
                     all_errors.extend(errs)
-            elif tx_type in ("modify", "modify-cancel", "cancel"):
-                valid, errs = validate_modify_types(fields, utxo_value)
+                elif utxo_value is not None:
+                    utxo_values.append(utxo_value)
+
+            if api_unavailable:
+                print("  ⚠️  Koios API unreachable — UTxOs not checked, amounts skipped")
+            elif len(utxo_values) == len(utxo_refs):
+                # 3. Amount balance check
+                valid, errs = validate_disburse_change(readme_text, utxo_values)
                 if not valid:
                     all_errors.extend(errs)
+
+    else:
+        # --- Non-disburse: existing heading + single-UTxO logic ---
+
+        # 1. Heading structure validation
+        valid, errs = validate_heading_structure(readme_text, tx_type, repo_root)
+        if not valid:
+            all_errors.extend(errs)
+
+        # 2. Extract h4 fields
+        fields = extract_h4_fields(readme_text)
+        utxo_ref = fields.get("UTXO", "")
+        if not utxo_ref:
+            all_errors.append("Missing #### UTXO field in README")
+
+        if skip_onchain:
+            print("  ℹ️  Skipping on-chain UTXO checks (--skip-onchain)")
+        elif utxo_ref:
+            # 3. On-chain UTXO validation
+            expected_address = TYPE_ADDRESS_MAP[tx_type]
+            valid, errs, utxo_value, api_unavailable = validate_utxo_onchain(
+                utxo_ref, expected_address
+            )
+            if api_unavailable:
+                print("  ⚠️  Koios API unreachable — UTXO not checked, amounts skipped")
+            else:
+                if not valid:
+                    all_errors.extend(errs)
+                # 4. Change amount validation
+                if tx_type in ("modify", "modify-cancel", "cancel"):
+                    valid, errs = validate_modify_types(fields, utxo_value)
+                    if not valid:
+                        all_errors.extend(errs)
 
     # 5. Keyhash quorum validation (driven by type_rule_map in keyhashes.json)
     try:

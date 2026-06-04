@@ -1,20 +1,13 @@
 # 2026-XX-XX Disburse [INSTERT-TITLE]
 
-## Transaction Inputs
-
-The UTxO marked ['insert label']
+## Transaction Inputs [insert number of inputs]
 
 #### UTXO:`tx-hash#index`
 
-## The UTxO Metadata
+- LABEL:`inset label`
+- IDENTIFIER:`insert identifier`
 
-Metadata present in the chosen UTxO
-
-#### LABEL:`inset label`
-
-#### IDENTIFIER:`UTXO-CR0000-00`
-
-## Transaction Outputs
+## Transaction Outputs [insert number of outputs]
 
 We only cover notable outputs, other outputs may be required by the orchestrating wallet to cover transaction fees.
 
@@ -30,7 +23,7 @@ We only cover notable outputs, other outputs may be required by the orchestratin
 
 #### ADDRESS:`treasury-reserve-contract-address`
 
-## Signatures
+## Required Signatures
 
 - Oversight Committee
 - Intersect Leadreship
