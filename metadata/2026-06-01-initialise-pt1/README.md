@@ -39,4 +39,10 @@ Six UTxO-s will be generated each for one project with their respective amounts.
   - Project ID : `CTW-26-0006`
   - Amount: `11,877,575` ada
   - Funding treasury withdrawal action: `gov_action1w0shrfxqwv95kk0v4cn34wylz25a2cmqkq5jpc0e2yrahhqava3qvczhx6t`
-  
+
+- Project Name: `Cardano at TOKEN2049 Singapore 2026: Baseline ‘Platinum' Sponsorship Proposal`
+  - Project ID : `CTW-26-0007`
+  - Amount: `3,303,750` ada
+  - Funding treasury withdrawal action: `gov_action18u8lpkzge2csxe3plynn9lh4agwtv3nrqkyfwalwj4ykjv7l68jqqzmul9z`
+
+Total withdrawn funds : 134,813,840 ada

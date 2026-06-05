@@ -10,8 +10,8 @@
         "body": {
             "event": "initialize",
             "reason": [
-                "Withdrawing Intersect administered funds for IO treasury withdrawals for 2026",
-                " governance actions enacted at the start of Epoch 634"
+                "Withdrawing Intersect administered funds for 2026 treasury withd",
+                "rawal governance actions enacted up to the start of Epoch 635."
             ],
             "outputs": {
                 "0": {
@@ -35,8 +35,18 @@
                     "identifier": "CTW-26-0005"
                 },
                 "5": {
-                    "label": "IO & VacuumLabs: Enhancing Plutus - Performance, Correctness, and Usability",
+                    "label": [
+                        "IO & VacuumLabs: Enhancing Plutus - Performance, Correctness, an",
+                        "d Usability"
+                    ],
                     "identifier": "CTW-26-0006"
+                },
+                "6": {
+                    "label": [
+                        "Cardano at TOKEN2049 Singapore 2026: Baseline ‘Platinum' Sponsor",
+                        "ship Proposal"
+                    ],
+                    "identifier": "CTW-26-0007"
                 }
             }
         }
