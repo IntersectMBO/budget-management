@@ -1,6 +1,6 @@
 # 2026-06-04 Disburse IO-2026
 
-## Transaction Inputs
+## Transaction Inputs [6]
 
 #### UTXO 1:`tx-hash#index`
 
@@ -32,7 +32,7 @@
 - LABEL:`inset label`
 - IDENTIFIER:`CTW-26-0001`
 
-## Transaction Outputs
+## Transaction Outputs [0]
 
 We only cover notable outputs, other outputs may be required by the orchestrating wallet to cover transaction fees.
 
