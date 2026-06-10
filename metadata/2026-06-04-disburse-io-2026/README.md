@@ -56,11 +56,11 @@ All ada from selected UTxO is expected to be disbursed to Intersect Custodian wa
 
 #### ADDRESS:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
 
-## Signatures
+## Required Signatures
 
 - Oversight Committee
   - Sundae labs keyhash : 1880102b04725318eb7a6f9f481815c82473c2f50cfe9932c85a3bf8
-  - DQuadrant hashkey : 679ad28e567eb42ddb30a5cf6b5f066b2defbce393f19968d711f658
+  - DQuadrant keyhash : 679ad28e567eb42ddb30a5cf6b5f066b2defbce393f19968d711f658
   - NMKR keyhash : 8349f8b41d8337b617947ace444ef95b2b80ff2605cadf969914cf95
 - Intersect Leadership
   - Leadership 1 keyhash : 4e72b1facdc7eea745767b8daca40bf73d75eb0e88dcee80d57eec5d
