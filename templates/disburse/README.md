@@ -26,7 +26,7 @@ We only cover notable outputs, other outputs may be required by the orchestratin
 ## Required Signatures
 
 - Oversight Committee
-- Intersect Leadreship
+- Intersect Leadership
 - Intersect Admin
 
 ## Transaction Metadata
