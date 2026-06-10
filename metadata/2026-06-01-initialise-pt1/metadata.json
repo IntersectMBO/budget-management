@@ -1,5 +1,5 @@
 {
-    "1694": {
+
         "@context": [
             "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
             "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
@@ -50,5 +50,4 @@
                 }
             }
         }
-    }
 }
