@@ -54,7 +54,7 @@ All ada from selected UTxO is expected to be disbursed to Intersect Custodian wa
   - Sundae labs keyhash : 1880102b04725318eb7a6f9f481815c82473c2f50cfe9932c85a3bf8
   - DQuadrant hashkey : 679ad28e567eb42ddb30a5cf6b5f066b2defbce393f19968d711f658
   - NMKR keyhash : 8349f8b41d8337b617947ace444ef95b2b80ff2605cadf969914cf95
-- Intersect Leadreship
+- Intersect Leadership
   - Leadership 1 keyhash : 4e72b1facdc7eea745767b8daca40bf73d75eb0e88dcee80d57eec5d
   - Leadership 2 keyhash : 91f5b1d436080c1beca93fbbb96596312d8f615b0ad9e94470af2224
 - Intersect Admin
