@@ -1,0 +1,45 @@
+{
+  "@context": [
+    "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-",
+    "contracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+  ],
+  "hashAlgorithm": "blake2b-256",
+  "txAuthor": "c27...",
+  "instance": "1ef...",
+  "body": {
+    "event": "disburse",
+    "label": "2025 TRC Disbursal for 2026 Funds Transaction",
+    "description": [
+      "Early, always-on treasury withdrawal governance actions, outside",
+      " of the Intersect facilitated 2026 process, are pointed towards ",
+      "the Intersect Administration 2025 Treasury Reserve Contract (TRC",
+      "). The governance actions specify the stake address associated w",
+      "ith this instance as the withdrawal address for treasury funds. ",
+      "This disbursal action moves DRep approved 2026 funds from the 20",
+      "25 TRC instance into Intersect custody to allow transformation i",
+      "nto the vendor selected preferred assets such as USDCx and USDM."
+    ],
+    "justification": [
+      "As part of the ongoing management of treasury funds and as part ",
+      "of the 2026 budget cycle a new 2026 TRC instance will be created",
+      ". This is required in order to update the permission set, oversi",
+      "ght committee, maximums and expiry parameters associated with th",
+      "e TRC instance.Once the final assets types are available funds w",
+      "ill be moved to a 2026 TRC instance for ongoing transparency and",
+      " milestone management under Intersects Administration. Due to th",
+      "e volume and nature of the final assets it is not possible to pr",
+      "edetermine the date funds will be returned to the 2026 TRC insta",
+      "nce./n/n**Disbursal value:** 131,510,090 ada"
+    ],
+    "destination": {
+      "label": "Intersect Custodian Address",
+      "details": {
+        "anchorUrl": [
+          "ipfs://bafkreihmzpq4t7av6wgvfs3shkyaxendglzyjrcy6vlkum36ionwiiif",
+          "nq"
+        ],
+        "anchorDataHash": "f6e54e837b515081c90098b5d5f25f64cd396a64d0e95d86055fd31f6cc96f42"
+      }
+    }
+  }
+}

@@ -1,38 +1,46 @@
 # 2026-06-04 Disburse IO-2026
 
+Disbursing IO 2026 ada to Intersect custodian.
+
 ## Transaction Inputs [6]
 
-#### UTXO 1:`tx-hash#index`
+#### UTXO 1:`358fe750f3c2e92ab74b99e2cb02d1903dabf5c5dfed7d99b06914b8d6f59c8d#0`
 
-- LABEL:`inset label`
+- LABEL:`IO: Developer Experience Initiative`
 - IDENTIFIER:`CTW-26-0001`
+- SIZE: 3601926000000
 
-#### UTXO 2:`tx-hash#index`
+#### UTXO 2:`358fe750f3c2e92ab74b99e2cb02d1903dabf5c5dfed7d99b06914b8d6f59c8d#1`
 
-- LABEL:`inset label`
+- LABEL:`IO: Cardano Upgrades`
 - IDENTIFIER:`CTW-26-0002`
+- SIZE: 13103039000000
 
-#### UTXO 3:`tx-hash#index`
+#### UTXO 3:`358fe750f3c2e92ab74b99e2cb02d1903dabf5c5dfed7d99b06914b8d6f59c8d#2`
 
-- LABEL:`inset label`
+- LABEL:`IO: Consensus Initiative`
 - IDENTIFIER:`CTW-26-0003`
+- SIZE: 27714342000000
 
-#### UTXO 4:`tx-hash#index`
+#### UTXO 4:`358fe750f3c2e92ab74b99e2cb02d1903dabf5c5dfed7d99b06914b8d6f59c8d#3`
 
-- LABEL:`inset label`
+- LABEL:`IO & Ensurable Systems: Cardano Maintenance Initiative`
 - IDENTIFIER:`CTW-26-0004`
+- SIZE: 62134630000000
 
-#### UTXO 5:`tx-hash#index`
+#### UTXO 5:`358fe750f3c2e92ab74b99e2cb02d1903dabf5c5dfed7d99b06914b8d6f59c8d#4`
 
-- LABEL:`inset label`
+- LABEL:`IO: Cardano High Assurance Technical Collaboration`
 - IDENTIFIER:`CTW-26-0005`
+- SIZE: 13078578000000
 
-#### UTXO 6:`tx-hash#index`
+#### UTXO 6:`358fe750f3c2e92ab74b99e2cb02d1903dabf5c5dfed7d99b06914b8d6f59c8d#5`
 
-- LABEL:`inset label`
-- IDENTIFIER:`CTW-26-0001`
+- LABEL:`IO & VacuumLabs: Enhancing Plutus - Performance, Correctness, and Usability`
+- IDENTIFIER:`CTW-26-0006`
+- SIZE: 11877575000000
 
-## Transaction Outputs [1]
+## Transaction Outputs [0]
 
 We only cover notable outputs, other outputs may be required by the orchestrating wallet to cover transaction fees.
 
@@ -48,7 +56,7 @@ All ada from selected UTxO is expected to be disbursed to Intersect Custodian wa
 
 #### ADDRESS:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
 
-## Signatures
+## Required Signatures
 
 - Oversight Committee
   - Sundae labs keyhash : 1880102b04725318eb7a6f9f481815c82473c2f50cfe9932c85a3bf8
