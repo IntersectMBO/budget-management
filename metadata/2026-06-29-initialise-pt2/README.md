@@ -23,6 +23,6 @@ Three UTxO-s will be generated each for one project with their respective amount
 - Project Name: `Cardano Critical Integrations V2`
   - Project ID : `CTW-26-0020`
   - Amount: `23,000,000` ada
-  - Funding treasury withdrawal action: `Cardano Critical Integrations V2`
+  - Funding treasury withdrawal action: `gov_action1cp0w6zwgwpj98jtu3r2q838lgwmhs6j49l58zx4q05lx220lmzaqqztnljz`
 
 Total withdrawn funds : 65,916,000 ada.
