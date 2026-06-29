@@ -38,8 +38,11 @@
     "destination": {
       "label": "Intersect Custodian Address",
       "details": {
-        "anchorUrl": "ipfs://bafkreihkz5cyp5mgpleex4cscprgsiv4ay2o2ug4feev4rfkpknfavqnve",
-        "anchorDataHash":"1eaea551fe028f8cc79df3b1192b44d2a04f3da4370abdf3fb91481fdd19d0ce" 
+        "anchorUrl": [
+          "ipfs://bafkreihkz5cyp5mgpleex4cscprgsiv4ay2o2ug4feev4rfkpknfavqn",
+          "ve"
+        ],
+        "anchorDataHash": "1eaea551fe028f8cc79df3b1192b44d2a04f3da4370abdf3fb91481fdd19d0ce"
       }
     }
   }
