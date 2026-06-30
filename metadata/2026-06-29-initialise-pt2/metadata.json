@@ -1,0 +1,34 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "instance": "...",
+    "txAuthor": "...",
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "event": "initialize",
+        "reason": [
+            "Withdrawing Intersect administered funds for 2026 treasury withd",
+            "rawal governance actions enacted from Epoch 636 up to the start ",
+            "of Epoch 640."
+        ],
+        "outputs": {
+            "0": {
+                "label": [
+                    "Cardano Vision 2026: Human Centred, Scalable, Post Quantum Secur",
+                    "e - IO Research"
+                ],
+                "identifier": "CTW-26-0019"
+            },
+            "1": {
+                "label": "5am.earth Trust Layer Targeting Vision 2030 KPIs",
+                "identifier": "CTW-26-0020"
+            },
+            "2": {
+                "label": "Cardano Critical Integrations V2",
+                "identifier": "CTW-26-0021"
+            }
+        }
+    }
+}
