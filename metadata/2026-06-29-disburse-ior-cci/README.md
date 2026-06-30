@@ -2,13 +2,13 @@
 
 ## Transaction Inputs [2]
 
-#### UTXO 1:`tx-hash#index`
+#### UTXO 1:`46667464c55f62811c78315b6583f9ed4d9b7fb5b0dba19464e033504c4a2993#0`
 
 - LABEL:`Cardano Vision 2026: Human Centred, Scalable, Post Quantum Secure - IO Research`
 - IDENTIFIER:`CTW-26-0019`
 - SIZE: 32916000000000
 
-#### UTXO 2:`tx-hash#index`
+#### UTXO 2:`46667464c55f62811c78315b6583f9ed4d9b7fb5b0dba19464e033504c4a2993#2`
 
 - LABEL:`Cardano Critical Integrations V2`
 - IDENTIFIER:`CTW-26-0021`
@@ -26,7 +26,7 @@ Both projects' funds are moving from the 2025 TRC instance into Intersect custod
 
 ## Change for Treasury Reserve Contract
 
-#### CHANGE_AMOUNT_LOVELACE:``
+#### CHANGE_AMOUNT_LOVELACE:`0`
 
 #### ADDRESS:`addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj`
 
