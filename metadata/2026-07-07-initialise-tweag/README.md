@@ -1,6 +1,6 @@
 # 2026-07-07 Tweag Core Cardano Infrastructure: Treasury Withdrawal 2026–2027
 
-## Transaction ID : ''
+## Transaction ID : '3487f08eabacdb39c3003c30dc9d458e74947a400ddd9c9cf0544125b6de82d2'
 
 ## Outputs
 
