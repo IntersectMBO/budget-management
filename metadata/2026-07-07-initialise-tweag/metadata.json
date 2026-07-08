@@ -1,0 +1,25 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "instance": "...",
+    "txAuthor": "...",
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "event": "initialize",
+        "reason": [
+            "Withdrawing Intersect administered funds for 2026 treasury withd",
+            "rawal governance actions enacted from Epoch 640 up to the start ",
+            "of Epoch 641."
+        ],
+        "outputs": {
+            "0": {
+                "label": [
+                    "Tweag Core Cardano Infrastructure: Treasury Withdrawal 2026–2027"
+                ],
+                "identifier": "CTW-26-0022"
+            }
+        }
+    }
+}
