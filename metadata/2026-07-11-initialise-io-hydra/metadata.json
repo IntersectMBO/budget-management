@@ -1,0 +1,25 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "instance": "...",
+    "txAuthor": "...",
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "event": "initialize",
+        "reason": [
+            "Withdrawing Intersect administered funds for 2026 treasury withd",
+            "rawal governance actions enacted from Epoch 641 up to the start ",
+            "of Epoch 643."
+        ],
+        "outputs": {
+            "0": {
+                "label": [
+                    "IO:Hydra"
+                ],
+                "identifier": "CTW-26-0023"
+            }
+        }
+    }
+}
