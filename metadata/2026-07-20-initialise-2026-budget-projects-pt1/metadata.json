@@ -1,0 +1,39 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "instance": "...",
+    "txAuthor": "...",
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "event": "initialize",
+        "reason": [
+            "Withdrawing Intersect administered funds for 2026 treasury withd",
+            "rawal governance actions enacted from Epoch 644 up to the start ",
+            "of Epoch 645."
+        ],
+        "outputs": {
+            "0": {
+                "label": "Pallas by TxPipe: Maintaining Cardano's Core Rust Libraries, Year 2",
+                "identifier": "CTW-26-0008"
+            },
+            "1": {
+                "label": "Dolos by TxPipe: Maintaining Cardano's Lightweight Data Node, Year 2",
+                "identifier": "CTW-26-0009"
+            },
+            "2": {
+                "label": "UTxO RPC by TxPipe: Maintaining Cardano’s Integration Standard, Year 2",
+                "identifier": "CTW-26-00010"
+            },
+            "3": {
+                "label": "Tx3 by TxPipe: Open API Layer for Cardano's dApp Protocols",
+                "identifier": "CTW-26-0011"
+            },
+            "4": {
+                "label": "Oura by TxPipe: Maintaining Cardano's Event Pipeline",
+                "identifier": "CTW-26-0012"
+            }
+        }
+    }
+}
