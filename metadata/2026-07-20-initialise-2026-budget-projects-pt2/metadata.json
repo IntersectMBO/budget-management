@@ -1,0 +1,39 @@
+{
+    "@context": [
+        "https://raw.githubusercontent.com/SundaeSwap-finance/treasury-co",
+        "ntracts/refs/heads/main/offchain/src/metadata/context.jsonld"
+    ],
+    "instance": "...",
+    "txAuthor": "...",
+    "hashAlgorithm": "blake2b-256",
+    "body": {
+        "event": "initialize",
+        "reason": [
+            "Withdrawing Intersect administered funds for 2026 treasury withd",
+            "rawal governance actions enacted from Epoch 645 up to the start ",
+            "of Epoch 646."
+        ],
+        "outputs": {
+            "0": {
+                "label": "Mithril Protocol",
+                "identifier": "CTW-26-0013"
+            },
+            "1": {
+                "label": "Intersect: Governance Coordination and Technical Stewardship for the Cardano Ecosystem",
+                "identifier": "CTW-26-0014"
+            },
+            "2": {
+                "label": "MLabs Core Tool Maintenance & Enhancement: Plutarch and Ply",
+                "identifier": "CTW-26-0016"
+            },
+            "3": {
+                "label": "Hardware Wallet Maintenance 2026",
+                "identifier": "CTW-26-0017"
+            },
+            "4": {
+                "label": "Intersect Technical Steering Committee Support",
+                "identifier": "CTW-26-0018"
+            }
+        }
+    }
+}
