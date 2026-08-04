@@ -11,7 +11,7 @@
         "reason": [
             "Withdrawing Intersect administered funds for 2026 treasury withd",
             "rawal governance actions enacted from Epoch 645 up to the start ",
-            "of Epoch 646."
+            "of Epoch 647."
         ],
         "outputs": {
             "0": {
@@ -32,6 +32,10 @@
             },
             "4": {
                 "label": "Intersect Technical Steering Committee Support",
+                "identifier": "CTW-26-0018"
+            },
+            "5": {
+                "label": "Se7en Labs: Daedalus Wallet Maintenance and Improvements",
                 "identifier": "CTW-26-0018"
             }
         }

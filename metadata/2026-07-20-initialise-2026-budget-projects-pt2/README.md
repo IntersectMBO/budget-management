@@ -1,6 +1,6 @@
 # 2026-07-29
 
-## Transaction ID : ''
+## Transaction ID : '48ac91c510d2d7d6ce7e73dd4b20c5ea6a19e029c808091e0a61e942a3b5e5f7'
 
 ## Outputs
 
@@ -35,4 +35,9 @@ Three UTxO-s will be generated each for one project with their respective amount
   - Amount: `1,193,000` ada
   - Funding treasury withdrawal action: `gov_action1k02990lhw6wh74t7c6ufw3mqaek9ujtvyan99dj5qv5kvcs7pn8sxypfkyr`
 
-Total withdrawn funds : 32877129000000 lovelace.
+- Project Name: `Se7en Labs: Daedalus Wallet Maintenance and Improvements`
+  - Project ID : `CTW-26-0024`
+  - Amount: `1,785,333` ada
+  - Funding treasury withdrawal action: `gov_action1mr0qdz2jmagvsch6r08fhqvq6vu8jakt4c8m9s7ea7z0p740vntqq4yjd6j`
+
+Total withdrawn funds : 34662462000000 lovelace.
