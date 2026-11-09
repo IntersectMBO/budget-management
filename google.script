@@ -1,0 +1,578 @@
+/**
+ * Payment Address Transaction Tracker - V2
+ * Clean architecture with step-by-step approval
+ */
+
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+const API_BASE = "https://api.koios.rest/api/v1";
+const ADDRESS_TXS_ENDPOINT = `${API_BASE}/address_txs`;
+const TX_INFO_ENDPOINT = `${API_BASE}/tx_info`;
+const BATCH_SIZE = 50;
+
+const BLOCKFROST_BASE = "https://cardano-mainnet.blockfrost.io/api/v0";
+const BLOCKFROST_PROJECT_ID = "mainnet99gNifPWc05ZPeBf5MSOgDU4ObehIKio";
+
+const PAYMENT_ADDRESS = "addr1xxzc8pt7fgf0lc0x7eq6z7z6puhsxmzktna7dluahrj6g6v9swzhujsjlls7dajp59u95re0qdk9vh8mumlemw89535s4ecqxj";
+const orchStakeAddr = [
+  "stake1u8cwz763hsvfvguhg58tvffz908fc5gvhq4jzw7eeut74qsxn4ljv",
+  "stake1u8tjgj62samm0hrfp86xgr8s96j827j402vlkjpmqhu8mlsvc72kz",
+  "stake1u955v0l4lcy5m4j77sw7j48d7cww8ntd86vxzpsdh0zrflgsjy8rv"
+];
+const VENDOR_ADDRESSES = [
+  "addr1xxyzewehw7dh78ea62mkgdnzmcdlcxqt4u39a7pqc0v0at5g9janwaum0u0nm54hvsmx9hsmlsvqhteztmuzps7cl6hq7d35th"
+];
+
+// Key hashes from treasury-contracts-config.json.
+// Both hashes per group map to the same display name (anyOf semantics).
+const ADMIN_KEY_HASHES = {
+  "1be0008bf2994524c0eaf0efdae4431e4a61ef7d974804fa794110b7": "Intersect Admin 1",
+  "27194940fae07315f4dc7a0394535dea7795dab2f232ee40f4457e8f": "Intersect Admin 1",
+  "a664de561ccd2ca9a07c060d4dd7cea4dc68ba89d4bf04b21ff0726f": "Intersect Admin 2",
+  "821dbb013b85872e91f59e5c3c566390c866aea114a13b1b68f064bc": "Intersect Admin 2",
+  "c236d8dc9441605238a5fe9cc7e6c1a79903289a4249c33122bf9627": "Intersect Admin 3",
+  "1b5850270f7a77ea9ef570a83fb4b120bf814ec94aa0dba0c9c28844": "Intersect Admin 3"
+};
+
+const LEADERSHIP_KEY_HASHES = {
+  "4e72b1facdc7eea745767b8daca40bf73d75eb0e88dcee80d57eec5d": "Leadership 1",
+  "1c732c072364a2afd42a03228f3816fec37e73f64b61f4c12bab55ee": "Leadership 1",
+  "91f5b1d436080c1beca93fbbb96596312d8f615b0ad9e94470af2224": "Leadership 2",
+  "a1ebdcc53ad3907461d92204f9789ddb640dcdcb0d9fce786a55eaf4": "Leadership 2"
+};
+
+const TRUSTED_ENTITY_KEY_HASHES = {
+  "ac3de68e8e1f9af3e00b299e7858bc44e126b33e130d06223d799d5d": "Cardano Foundation",
+  "c9f2966a1b357718b45a006954106ba1f7ae9fea16e9826f3486ddd6": "Cardano Foundation",
+  "1880102b04725318eb7a6f9f481815c82473c2f50cfe9932c85a3bf8": "Sundae Labs",
+  "7a827787c47a4e74f102330cc8566ed9845047903121025911163b9d": "Sundae Labs",
+  "a7f06cf4e9c03c6b7eac317d5533d573a9be3018fb7b9d95dd778d39": "Xerberus",
+  "d8261e2c334b58072042130182de4fb945a46dd1b1974e1df755fe96": "Xerberus",
+  "8349f8b41d8337b617947ace444ef95b2b80ff2605cadf969914cf95": "NMKR",
+  "cd820bac2773f2df622c567aa547894177a818593bdae996dd0881e3": "NMKR",
+  "679ad28e567eb42ddb30a5cf6b5f066b2defbce393f19968d711f658": "DQuadrant",
+  "36e0cf1e52e05ef92e52c7bc2a04493d6bae481b8acbab12ec4300d7": "DQuadrant"
+};
+
+
+// ============================================================================
+// SIGNER CLASSIFICATION
+// ============================================================================
+
+/**
+ * Map raw required-signer key hashes to human-readable group names.
+ * @param {Array} keyHashes - Array of 28-byte key hash hex strings
+ * @returns {{ admin: string, leadership: string, trustedEntities: string }}
+ */
+function classifySigners(keyHashes) {
+  const admin = new Set();
+  const leadership = new Set();
+  const trustedEntities = new Set();
+
+  (keyHashes || []).forEach(h => {
+    if (ADMIN_KEY_HASHES[h])          admin.add(ADMIN_KEY_HASHES[h]);
+    if (LEADERSHIP_KEY_HASHES[h])     leadership.add(LEADERSHIP_KEY_HASHES[h]);
+    if (TRUSTED_ENTITY_KEY_HASHES[h]) trustedEntities.add(TRUSTED_ENTITY_KEY_HASHES[h]);
+  });
+
+  return {
+    admin:           [...admin].join(", "),
+    leadership:      [...leadership].join(", "),
+    trustedEntities: [...trustedEntities].join(", ")
+  };
+}
+
+
+// ============================================================================
+// API FUNCTIONS
+// ============================================================================
+
+/**
+ * General API call function for Koios
+ * @param {string} endpoint - Full API endpoint URL
+ * @param {Object} data - Request payload data
+ * @returns {Object} API response
+ */
+function apiCall(endpoint, data) {
+  const options = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    payload: JSON.stringify(data)
+  };
+
+  try {
+    const response = UrlFetchApp.fetch(endpoint, options);
+
+    if (response.getResponseCode() !== 200) {
+      throw new Error(`Koios returned HTTP ${response.getResponseCode()}: ${response.getContentText()}`);
+    }
+
+    return JSON.parse(response.getContentText());
+  } catch (error) {
+    console.error(`API call failed for ${endpoint}:`, error.message);
+    throw error;
+  }
+}
+
+/**
+ * Get all transactions for a payment address
+ * @param {string} address - Payment address
+ * @returns {Array} Array of transaction objects
+ */
+function getAddressTransactions(address) {
+  console.log("Getting transactions for :", address);
+  return apiCall(ADDRESS_TXS_ENDPOINT, { _addresses: [address] });
+}
+
+/**
+ * Get detailed transaction information
+ * @param {Array} txHashes - Array of transaction hashes
+ * @returns {Array} Array of detailed transaction objects
+ */
+function getTransactionDetails(txHashes) {
+  return apiCall(TX_INFO_ENDPOINT, {
+    _tx_hashes: txHashes,
+    _inputs: true,
+    _metadata: true,
+    _withdrawals: true,
+    _assets: true
+  });
+}
+
+/**
+ * Fetch required signers for a list of tx hashes via Blockfrost.
+ * Uses fetchAll to parallelise within each batch of 50.
+ * @param {Array} txHashes - Array of transaction hash strings
+ * @returns {Object} Map of txHash -> { admin, leadership, trustedEntities }
+ */
+function fetchSignersForTransactions(txHashes) {
+  const signerMap = {};
+  const empty = { admin: "", leadership: "", trustedEntities: "" };
+
+  for (let i = 0; i < txHashes.length; i += BATCH_SIZE) {
+    const batch = txHashes.slice(i, i + BATCH_SIZE);
+    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+    const totalBatches = Math.ceil(txHashes.length / BATCH_SIZE);
+    console.log(`Fetching signers batch ${batchNum}/${totalBatches} (${batch.length} txs)`);
+
+    const requests = batch.map(hash => ({
+      url: `${BLOCKFROST_BASE}/txs/${hash}`,
+      method: 'GET',
+      headers: { 'project_id': BLOCKFROST_PROJECT_ID },
+      muteHttpExceptions: true
+    }));
+
+    try {
+      const responses = UrlFetchApp.fetchAll(requests);
+      responses.forEach((resp, idx) => {
+        const hash = batch[idx];
+        try {
+          if (resp.getResponseCode() === 200) {
+            const data = JSON.parse(resp.getContentText());
+            signerMap[hash] = classifySigners(data.required_signers || []);
+          } else {
+            console.warn(`Blockfrost ${resp.getResponseCode()} for ${hash}`);
+            signerMap[hash] = empty;
+          }
+        } catch (e) {
+          console.error(`Parse error for ${hash}:`, e.message);
+          signerMap[hash] = empty;
+        }
+      });
+    } catch (e) {
+      console.error(`Signer batch ${batchNum} failed:`, e.message);
+      batch.forEach(h => { signerMap[h] = empty; });
+    }
+
+    if (i + BATCH_SIZE < txHashes.length) Utilities.sleep(200);
+  }
+
+  return signerMap;
+}
+
+
+// ============================================================================
+// STEP 1: FETCH & ENRICH TRANSACTION DATA
+// ============================================================================
+
+/**
+ * Main orchestrator for Step 1: Get all tx hashes and enrich with details
+ * @param {string} paymentAddress - The Cardano payment address to track
+ * @returns {Array} Array of enriched transaction objects
+ */
+function fetchAndEnrichTransactions(paymentAddress) {
+  console.log(`Starting data fetch for address: ${paymentAddress}`);
+
+  const txData = getAddressTransactions(paymentAddress);
+  console.log(`Found ${txData.length} transactions`);
+  Utilities.sleep(150);
+
+  if (txData.length === 0) return [];
+
+  const txHashes = txData
+    .filter(tx => tx.tx_hash)
+    .map(tx => tx.tx_hash);
+
+  const enrichedTransactions = enrichTransactionsInBatches(txHashes);
+  console.log(`Successfully enriched ${enrichedTransactions.length} transactions`);
+
+  return enrichedTransactions;
+}
+
+/**
+ * Enrich transaction hashes with full details in batches
+ * @param {Array} txHashes - Array of transaction hash strings
+ * @returns {Array} Array of enriched transaction objects
+ */
+function enrichTransactionsInBatches(txHashes) {
+  const enrichedData = [];
+  const totalBatches = Math.ceil(txHashes.length / BATCH_SIZE);
+
+  for (let i = 0; i < txHashes.length; i += BATCH_SIZE) {
+    const batch = txHashes.slice(i, i + BATCH_SIZE);
+    const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+
+    console.log(`Processing batch ${batchNum}/${totalBatches} (${batch.length} transactions)`);
+
+    try {
+      const batchData = getTransactionDetails(batch);
+      if (batchData && batchData.length > 0) {
+        enrichedData.push(...batchData);
+      }
+      if (i + BATCH_SIZE < txHashes.length) Utilities.sleep(250);
+    } catch (error) {
+      console.error(`Batch ${batchNum} failed:`, error.message);
+    }
+  }
+
+  return enrichedData;
+}
+
+
+// ============================================================================
+// STEP 2: CALCULATE ADA IN/OUT (FLOW)
+// ============================================================================
+
+/**
+ * Determine if the tracked address is sending or receiving in a transaction
+ * @param {Object} txDetail - Transaction detail object from tx_info
+ * @param {string} address - Payment address being tracked
+ * @returns {{direction: string, amountAda: number, inputLovelace: number, outputLovelace: number, senders: Array, receivers: Array}}
+ */
+function calculateAdaFlow(txDetail, address) {
+  const inputs = txDetail.inputs || [];
+  const outputs = txDetail.outputs || [];
+
+  const senders = [...new Set(
+    inputs
+      .filter(i => i.payment_addr && i.payment_addr.bech32)
+      .map(i => orchStakeAddr.includes(i.stake_addr) ? "orchestrator" : i.payment_addr.bech32)
+  )];
+
+  const receivers = [...new Set(
+    outputs
+      .filter(o => o.payment_addr && o.payment_addr.bech32)
+      .map(o => orchStakeAddr.includes(o.stake_addr) ? "orchestrator" : o.payment_addr.bech32)
+  )];
+
+  const vendorAddress = senders.filter(s => s !== "orchestrator" && s !== address);
+
+  const inputLovelace = inputs
+    .filter(i => i.payment_addr && i.payment_addr.bech32 === address)
+    .reduce((sum, i) => sum + parseInt(i.value || 0, 10), 0);
+
+  const outputLovelace = outputs
+    .filter(o => o.payment_addr && o.payment_addr.bech32 === address)
+    .reduce((sum, o) => sum + parseInt(o.value || 0, 10), 0);
+
+  const inInputs = inputLovelace > 0;
+  const inOutputs = outputLovelace > 0;
+
+  let direction = "internal";
+  let amountAda = 0;
+
+  if (inInputs && !inOutputs) {
+    direction = "out";
+    amountAda = lovelaceToAda(inputLovelace);
+  } else if (!inInputs && inOutputs) {
+    direction = "in";
+    amountAda = lovelaceToAda(outputLovelace);
+  } else if (inInputs && inOutputs) {
+    const diff = outputLovelace - inputLovelace;
+    direction = diff >= 0 ? "in" : "out";
+    amountAda = lovelaceToAda(Math.abs(diff));
+  }
+
+  return { direction, amountAda, inputLovelace, outputLovelace, senders, receivers, vendorAddress };
+}
+
+/**
+ * Utility: Convert lovelace to ADA
+ */
+function lovelaceToAda(lovelace) {
+  return parseFloat(lovelace) / 1000000;
+}
+
+
+// ============================================================================
+// STEP 3: PROCESS & WRITE TO GOOGLE SHEET
+// ============================================================================
+
+/**
+ * Process enriched transactions with flow calculation
+ * @param {Array} enrichedTransactions - Array of transaction details from Koios
+ * @param {string} trackedAddress - The payment address being tracked
+ * @param {string} addressType - Type of address ('TRC' or 'VC')
+ * @param {Object} signerMap - Map of txHash -> { admin, leadership, trustedEntities }
+ * @returns {Array} Array of processed transaction objects
+ */
+function processTransactionsForSheet(enrichedTransactions, trackedAddress, addressType = 'TRC', signerMap = {}) {
+  const processedData = [];
+
+  const vendorsList = [...new Set(
+    enrichedTransactions.flatMap(tx => {
+      const flow = calculateAdaFlow(tx, trackedAddress);
+      return flow.receivers.filter(r => r !== "orchestrator" && r !== trackedAddress);
+    })
+  )];
+  console.log("Vendors List:", vendorsList);
+
+  enrichedTransactions.forEach(tx => {
+    try {
+      const flow = calculateAdaFlow(tx, trackedAddress);
+
+      let event = "";
+      try {
+        if (tx.metadata && tx.metadata["1694"] && tx.metadata["1694"].body && tx.metadata["1694"].body.event) {
+          event = tx.metadata["1694"].body.event;
+        }
+      } catch (e) { }
+
+      const signers = signerMap[tx.tx_hash] || { admin: "", leadership: "", trustedEntities: "" };
+
+      const processed = {
+        address: trackedAddress,
+        addressType: addressType,
+        txHash: tx.tx_hash || "",
+        blockHeight: tx.block_height || 0,
+        timestamp: formatTimestamp(tx.tx_timestamp || 0),
+        direction: flow.direction,
+        amountAda: flow.amountAda,
+        senders: flow.senders.join(", "),
+        receivers: flow.receivers.join(", "),
+        event: event,
+        feeAda: lovelaceToAda(tx.fee || 0),
+        adminSigs: signers.admin,
+        leadershipSigs: signers.leadership,
+        trustedEntitySigs: signers.trustedEntities,
+        metadata: tx.metadata ? JSON.stringify(tx.metadata, null, 2) : ""
+      };
+
+      processedData.push(processed);
+    } catch (error) {
+      console.error(`Error processing transaction ${tx.tx_hash}:`, error.message);
+    }
+  });
+
+  processedData.sort((a, b) => a.blockHeight - b.blockHeight);
+
+  return processedData;
+}
+
+/**
+ * Write processed transactions to Google Sheet
+ * @param {Array} processedTransactions - Array of processed transaction objects
+ * @param {string} sheetName - Name of the sheet to create/overwrite
+ */
+function writeToGoogleSheet(processedTransactions, sheetName = "Transactions") {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+
+  let sheet = spreadsheet.getSheetByName(sheetName);
+  if (sheet) {
+    sheet.clear();
+  } else {
+    sheet = spreadsheet.insertSheet(sheetName);
+  }
+
+  const headers = [
+    "Address",
+    "Address Type",
+    "Transaction Hash",
+    "Block Height",
+    "Timestamp",
+    "Direction",
+    "Amount (ADA)",
+    "Fee (ADA)",
+    "Senders",
+    "Receivers",
+    "Event",
+    "Admin Signatures",
+    "Leadership Signatures",
+    "Trusted Entity Signatures",
+    "Metadata"
+  ];
+
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+
+  const headerRange = sheet.getRange(1, 1, 1, headers.length);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#1f73e6");
+  headerRange.setFontColor("white");
+
+  if (processedTransactions.length > 0) {
+    const rows = processedTransactions.map(tx => [
+      tx.address,
+      tx.addressType,
+      tx.txHash,
+      tx.blockHeight,
+      tx.timestamp,
+      tx.direction,
+      tx.amountAda,
+      tx.feeAda,
+      tx.senders,
+      tx.receivers,
+      tx.event,
+      tx.adminSigs,
+      tx.leadershipSigs,
+      tx.trustedEntitySigs,
+      tx.metadata
+    ]);
+
+    sheet.getRange(2, 1, rows.length, headers.length).setValues(rows);
+
+    sheet.getRange(2, 4, rows.length, 1).setNumberFormat("0");           // Block height
+    sheet.getRange(2, 7, rows.length, 2).setNumberFormat("#,##0.000000"); // ADA amounts
+
+    sheet.getRange(1, 1, rows.length + 1, headers.length)
+      .setBorder(true, true, true, true, true, true);
+
+    sheet.setColumnWidth(1, 70);   // Address
+    sheet.setColumnWidth(2, 90);   // Address Type
+    sheet.setColumnWidth(3, 130);  // Transaction Hash
+    sheet.setColumnWidth(4, 80);   // Block Height
+    sheet.setColumnWidth(5, 130);  // Timestamp
+    sheet.setColumnWidth(6, 80);   // Direction
+    sheet.setColumnWidth(7, 100);  // Amount
+    sheet.setColumnWidth(8, 100);  // Fee
+    sheet.setColumnWidth(9, 150);  // Senders
+    sheet.setColumnWidth(10, 150); // Receivers
+    sheet.setColumnWidth(11, 80);  // Event
+    sheet.setColumnWidth(12, 200); // Admin Signatures
+    sheet.setColumnWidth(13, 180); // Leadership Signatures
+    sheet.setColumnWidth(14, 220); // Trusted Entity Signatures
+    sheet.setColumnWidth(15, 150); // Metadata
+  }
+
+  console.log(`Wrote ${processedTransactions.length} transactions to sheet: ${sheetName}`);
+}
+
+/**
+ * Format timestamp to human readable
+ * @param {number} timestamp - Unix timestamp
+ * @returns {string} Formatted date string
+ */
+function formatTimestamp(timestamp) {
+  return Utilities.formatDate(
+    new Date(timestamp * 1000),
+    Session.getScriptTimeZone(),
+    "yyyy-MM-dd HH:mm:ss"
+  );
+}
+
+
+// ============================================================================
+// UI & MAIN ORCHESTRATOR
+// ============================================================================
+
+/**
+ * Create menu
+ */
+function onOpen() {
+  const ui = SpreadsheetApp.getUi();
+  ui.createMenu('🔗 Payment Tracker')
+    .addItem('📊 Track Payment Address', 'trackPaymentAddress')
+    .addToUi();
+}
+
+/**
+ * Main orchestrator: Run all 3 steps
+ */
+function trackPaymentAddress() {
+  try {
+    console.log(`=== STARTING PAYMENT ADDRESS TRACKER ===`);
+    console.log(`Address: ${PAYMENT_ADDRESS}`);
+
+    // Step 1: Fetch & enrich payment address transactions
+    console.log("\n[Step 1] Fetching and enriching transactions for payment address...");
+    const paymentEnrichedTxs = fetchAndEnrichTransactions(PAYMENT_ADDRESS);
+    const paymentTxHashes = new Set(paymentEnrichedTxs.map(tx => tx.tx_hash));
+
+    // Step 1b: Fetch required signers via Blockfrost
+    console.log("\n[Step 1b] Fetching required signers for payment address transactions...");
+    const paymentSignerMap = paymentEnrichedTxs.length > 0
+      ? fetchSignersForTransactions(paymentEnrichedTxs.map(tx => tx.tx_hash))
+      : {};
+
+    // Step 2: Process payment address
+    const allProcessed = [];
+    if (paymentEnrichedTxs.length > 0) {
+      console.log("\n[Step 2] Calculating ADA flow for payment address...");
+      const processedPayment = processTransactionsForSheet(paymentEnrichedTxs, PAYMENT_ADDRESS, 'TRC', paymentSignerMap);
+      allProcessed.push(...processedPayment);
+      console.log(`Processed ${processedPayment.length} payment-address transactions`);
+    } else {
+      console.log("No transactions found for the payment address.");
+    }
+
+    // Step 2b: Fetch, filter, and process vendor addresses
+    VENDOR_ADDRESSES.forEach(vendorAddr => {
+      try {
+        console.log(`\n[Step 2b] Fetching transactions for vendor: ${vendorAddr}`);
+        const vendorTxData = getAddressTransactions(vendorAddr);
+        const vendorHashes = vendorTxData
+          .filter(tx => tx.tx_hash && !paymentTxHashes.has(tx.tx_hash))
+          .map(tx => tx.tx_hash);
+
+        if (vendorHashes.length === 0) {
+          console.log(`No new vendor transactions for ${vendorAddr} (all overlap with payment address).`);
+          return;
+        }
+
+        const vendorEnriched = enrichTransactionsInBatches(vendorHashes);
+
+        console.log(`\n[Step 2b-signers] Fetching required signers for vendor ${vendorAddr}...`);
+        const vendorSignerMap = fetchSignersForTransactions(vendorHashes);
+
+        const processedVendor = processTransactionsForSheet(vendorEnriched, vendorAddr, 'VC', vendorSignerMap);
+        allProcessed.push(...processedVendor);
+        console.log(`Processed ${processedVendor.length} vendor transactions for ${vendorAddr}`);
+      } catch (err) {
+        console.error(`Error processing vendor ${vendorAddr}:`, err.message);
+      }
+    });
+
+    // Step 3: Write to sheet
+    if (allProcessed.length === 0) {
+      SpreadsheetApp.getUi().alert("No transactions found for payment or vendor addresses.");
+      return;
+    }
+
+    console.log("\n[Step 3] Writing to Google Sheet...");
+    allProcessed.sort((a, b) => a.blockHeight - b.blockHeight);
+    writeToGoogleSheet(allProcessed, "Transactions");
+
+    console.log(`\n=== COMPLETE ===`);
+    SpreadsheetApp.getUi().alert(
+      `✅ Successfully tracked ${allProcessed.length} transactions across payment and vendor addresses!`
+    );
+
+  } catch (error) {
+    console.error("Error:", error.message);
+    SpreadsheetApp.getUi().alert(`❌ Error: ${error.message}`);
+  }
+}
